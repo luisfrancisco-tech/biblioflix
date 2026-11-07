@@ -1102,108 +1102,111 @@
     .my-library-banner h1 { font-size: 1.2rem !important; }
     .my-library-banner i { font-size: 2rem; }
 }
-    /* ===================================================================
-   MENÚ MÓVIL REDISEÑADO: Logo + Botones arriba, Categorías elegantes, Buscador abajo
+        /* ===================================================================
+   MENÚ MÓVIL PERFECTO: Logo+Botones arriba, Categorías al medio, Buscador abajo
    =================================================================== */
 @media (max-width: 900px) {
-    /* 1. Preparamos la barra de navegación para reordenar sus piezas */
+    /* 1. Preparamos la barra para que fluya en bloque */
     .navbar {
         flex-wrap: wrap;
         padding: 15px 16px;
-        background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%); /* Fondo más sólido al hacer scroll */
+        background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%);
+        gap: 15px; /* Separa las 3 filas */
     }
     
     .nav-left, .nav-right {
-        display: contents; /* Esto "disuelve" los contenedores para que sus hijos suban al navbar */
+        display: contents; /* Permite reordenar los elementos libremente */
     }
 
-    /* 2. Fila 1: Logo a la izquierda y botones a la derecha */
+    /* ==========================================
+       FILA 1: Logo y los 3 botones a la derecha
+       ========================================== */
     .brand-logo {
         order: 1;
-        margin-right: auto; /* Empuja los botones a la derecha */
     }
-    
-    .btn-logout {
-        order: 2;
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.1);
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 8px;
-        font-size: 0; /* Oculta el texto, deja el icono */
-    }
-    .btn-logout i { font-size: 1rem; color: #fff; }
-    
-    /* El botón de "Salir" tiene un order un poco más alto para quedar al lado del perfil */
-    .btn-logout[onclick*="handleLogout"] { order: 3; }
 
+    /* Botón de Perfiles */
+    .nav-right .btn-logout[onclick*="switchProfile"] {
+        order: 2;
+        margin-left: auto; /* Empuja los botones a la derecha */
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0; padding: 0;
+    }
+    /* Botón de Salir */
+    .nav-right .btn-logout[onclick*="handleLogout"] {
+        order: 3;
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0; padding: 0; margin-left: 8px;
+    }
+    .nav-right .btn-logout i { font-size: 1rem; color: #fff; }
+    
+    /* Foto de perfil */
     .current-user-avatar {
         order: 4;
-        width: 38px;
-        height: 38px;
-        margin-left: 8px;
+        width: 40px; height: 40px; margin-left: 8px;
     }
 
-    /* 3. Fila 2: Categorías con un diseño estético (Estilo cristal/glass) */
+    /* ==========================================
+       FILA 2: Categorías con diseño estético
+       ========================================== */
     .nav-links {
         order: 5;
-        width: 100%;
+        flex: 0 0 100%; /* Obliga a ocupar toda la línea y bajar */
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
         gap: 10px;
-        margin-top: 18px;
+        scrollbar-width: none;
         padding-bottom: 5px;
-        scrollbar-width: none; /* Oculta la barra en Firefox */
     }
-    .nav-links::-webkit-scrollbar { display: none; } /* Oculta la barra en Chrome/Safari */
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links li { display: flex; }
 
     .nav-links a {
-        background: rgba(255, 255, 255, 0.08); /* Fondo semi-transparente elegante */
+        background: rgba(255, 255, 255, 0.08); /* Efecto cristal */
         border: 1px solid rgba(255, 255, 255, 0.15);
         padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 0.85rem;
+        border-radius: 20px; /* Bordes muy redondos */
+        font-size: 0.9rem;
         color: #e5e5e5;
-        font-weight: 500;
         white-space: nowrap;
         backdrop-filter: blur(5px);
-        transition: all 0.2s;
     }
     .nav-links a:active {
-        background: var(--netflix-red); /* Se pone rojo al tocarlo */
+        background: var(--netflix-red);
         border-color: var(--netflix-red);
         color: #fff;
     }
 
-    /* 4. Fila 3: La barra de búsqueda hasta abajo, ocupando todo el ancho */
+    /* ==========================================
+       FILA 3: Buscador hasta abajo
+       ========================================== */
     .search-box {
         order: 6;
-        width: 100%;
-        margin-top: 5px;
+        flex: 0 0 100%; /* Obliga a ocupar toda la línea y bajar */
     }
     .search-box input {
         width: 100%;
-        font-size: 16px; /* Evita que el iPhone haga zoom al escribir */
-        padding: 10px 12px 10px 36px;
-        border-radius: 6px;
+        font-size: 16px; /* Evita el zoom en iPhone */
+        padding: 12px 12px 12px 38px;
+        border-radius: 8px;
         background: rgba(255,255,255,0.05);
         border: 1px solid #444;
     }
     .search-box i {
-        left: 12px;
+        left: 14px; font-size: 1rem;
     }
 
-    /* 5. Ajustamos el espacio de arriba porque el menú ahora es un poco más alto */
-    .hero { padding-top: 180px; }
-    .page-view { padding-top: 180px; }
-    #screen-admin { padding-top: 170px; }
+    /* Ajuste de espacio para que el nuevo menú (más alto) no tape el contenido */
+    .hero { padding-top: 200px; }
+    .page-view { padding-top: 200px; }
+    #screen-admin { padding-top: 190px; }
 }
-    </style>
+ </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
