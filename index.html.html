@@ -1,0 +1,2348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiblioFlix - Tu Biblioteca Virtual</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --netflix-red: #E50914;
+            --netflix-dark-red: #B81D24;
+            --bg-black: #141414;
+            --card-bg: #181818;
+            --text-white: #FFFFFF;
+            --text-gray: #AAAAAA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            overflow-x: hidden;
+        }
+
+        /* 1. PANTALLA CREAR CUENTA */
+        #screen-register {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)),
+                        url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-header {
+            position: absolute;
+            top: 25px;
+            left: 50px;
+        }
+
+        .brand-logo {
+            color: var(--netflix-red);
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .login-box {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 50px 60px;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 8px;
+        }
+
+        .login-box h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px;
+            padding-right: 45px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background: #333;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            background: #454545;
+            border-color: #555;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-white);
+        }
+
+        .btn-netflix {
+            width: 100%;
+            padding: 16px;
+            background: var(--netflix-red);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+
+        .btn-netflix:hover {
+            background: var(--netflix-dark-red);
+        }
+
+        /* 2. PANTALLA SELECCIÓN DE PERFIL */
+        #screen-profiles {
+            min-height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profiles-title {
+            font-size: 3rem;
+            font-weight: 500;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .profiles-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 150px;
+            transition: transform 0.2s;
+        }
+
+        .profile-card:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 3px solid transparent;
+        }
+
+        .profile-card:hover .profile-avatar {
+            border-color: #fff;
+        }
+
+        .profile-name {
+            margin-top: 15px;
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .profile-card:hover .profile-name {
+            color: #fff;
+        }
+
+        .add-profile-btn {
+            width: 140px;
+            height: 140px;
+            border-radius: 8px;
+            background: transparent;
+            border: 3px dashed #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #777;
+            transition: all 0.2s;
+        }
+
+        .add-profile-btn:hover {
+            border-color: #fff;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .add-profile-btn i {
+            font-size: 3rem;
+            margin-bottom: 5px;
+        }
+
+        /* 3. PANTALLA PRINCIPAL BIBLIOFLIX */
+        #screen-app {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        .navbar.scrolled {
+            background: var(--bg-black);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e5e5e5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #b3b3b3;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background: rgba(0,0,0,0.75);
+            border: 1px solid #777;
+            padding: 8px 12px 8px 35px;
+            border-radius: 4px;
+            color: #fff;
+            width: 220px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .btn-add-book {
+            background: var(--netflix-red);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .current-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .current-user-avatar:hover {
+            border-color: #fff;
+        }
+
+        /* Hero Banner */
+        .hero {
+            height: 70vh;
+            background: linear-gradient(to right, rgba(20,20,20,0.95) 20%, rgba(20,20,20,0.2) 60%, rgba(20,20,20,0.95) 100%),
+                        url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 50px;
+        }
+
+        .hero-tag {
+            color: var(--netflix-red);
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            max-width: 600px;
+            margin-bottom: 15px;
+            line-height: 1.1;
+        }
+
+        .hero-desc {
+            font-size: 1.1rem;
+            max-width: 500px;
+            color: #ddd;
+            margin-bottom: 25px;
+        }
+
+        .btn-hero {
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            color: #000;
+            width: fit-content;
+        }
+
+        /* Categorías y Carruseles */
+        .content-sections {
+            margin-top: -80px;
+            padding-bottom: 50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .category-row {
+            margin-bottom: 40px;
+            padding: 0 50px;
+        }
+
+        .category-title-header {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: color 0.2s;
+        }
+
+        .category-title-header:hover {
+            color: var(--netflix-red);
+        }
+
+        .books-carousel {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: thin;
+        }
+
+        .books-carousel::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .books-carousel::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .book-card {
+            min-width: 170px;
+            width: 170px;
+            background: var(--card-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .book-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+            z-index: 20;
+        }
+
+        .book-card-img-container {
+            width: 170px;
+            height: 220px;
+            position: relative;
+        }
+
+        .book-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-card-details {
+            padding: 10px;
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .book-card-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-card-author {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-card-price {
+            font-size: 0.8rem;
+            color: #46d369;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        /* VISTAS EXCLUSIVAS */
+        .page-view {
+            display: none;
+            min-height: 100vh;
+            padding: 120px 50px 50px 50px;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #777;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #333;
+        }
+
+        .my-library-banner {
+            background: linear-gradient(135deg, #1a1a1a, #2a080a);
+            border: 1px solid #333;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .my-library-banner i {
+            font-size: 3rem;
+            color: var(--netflix-red);
+        }
+
+        .empty-library {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+
+        .empty-library i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        /* Modales generales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* El mensaje central siempre queda por encima de los demás modales */
+        #modal-center-message {
+            z-index: 10001;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 700px;
+            max-height: 92vh;
+            overflow-y: auto;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header-img {
+            height: min(62vh, 480px);
+            background-color: #0b0b0b;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--netflix-red);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .modal-subtitle {
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .modal-synopsis {
+            color: #ccc;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .store-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-buy {
+            flex: 1;
+            padding: 14px;
+            background: #46d369;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-buy:hover {
+            opacity: 0.9;
+        }
+
+        .btn-rent {
+            flex: 1;
+            padding: 14px;
+            background: #e50914;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-rent:hover {
+            opacity: 0.9;
+        }
+
+        .btn-return {
+            flex: 1;
+            padding: 14px;
+            background: #555;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn-return:hover {
+            background: var(--netflix-red);
+        }
+
+        /* Modal Central de Mensajes Motivadores */
+        .modal-center-card {
+            background: linear-gradient(145deg, #1f1f1f, #261113);
+            border: 1px solid #444;
+            width: 90%;
+            max-width: 480px;
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+        }
+
+        .modal-center-card i.main-icon {
+            font-size: 3.5rem;
+            color: var(--netflix-red);
+            margin-bottom: 20px;
+        }
+
+        .modal-center-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .modal-center-card p {
+            color: #ddd;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .modal-edit-box {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+        .modal-edit-box h4 {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .modal-edit-box input {
+            width: 100%;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-grid .full-width {
+            grid-column: span 2;
+        }
+
+        .form-grid input, .form-grid select, .form-grid textarea {
+            width: 100%;
+            padding: 12px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .form-grid textarea {
+            resize: vertical;
+            height: 90px;
+        }
+
+        .avatar-presets {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .avatar-preset-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .avatar-preset-img:hover, .avatar-preset-img.selected {
+            border-color: var(--netflix-red);
+        }
+
+        .auth-error {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            min-height: 1.2em;
+            margin-bottom: 4px;
+        }
+
+        .auth-switch {
+            margin-top: 22px;
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        .auth-switch a {
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #777;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-logout:hover {
+            background: #333;
+        }
+
+        /* ===== Editor de perfil ===== */
+        .profile-avatar-wrap { position: relative; }
+        .profile-edit-badge {
+            position: absolute; right: 6px; bottom: 6px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0,0,0,0.85); border: 2px solid #fff; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; opacity: 0; transition: opacity 0.2s, background 0.2s;
+        }
+        .profile-card:hover .profile-edit-badge { opacity: 1; }
+        .profile-edit-badge:hover { background: var(--netflix-red); }
+
+        .profile-editor-head {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 10px 0 20px; margin-bottom: 20px; border-bottom: 1px solid #2c2c2c;
+        }
+        .profile-preview {
+            width: 130px; height: 130px; border-radius: 14px; object-fit: cover;
+            border: 4px solid var(--netflix-red); background: #222;
+            box-shadow: 0 8px 24px rgba(229,9,20,0.35);
+        }
+        .profile-editor-label {
+            display: block; color: var(--text-gray); font-size: 0.85rem;
+            font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin: 18px 0 8px;
+        }
+        .profile-editor-input {
+            width: 100%; padding: 14px; background: #222; border: 1px solid #444;
+            color: #fff; border-radius: 6px; font-size: 1.05rem;
+        }
+        .profile-editor-input:focus { outline: none; border-color: var(--netflix-red); }
+        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .avatar-option {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            padding: 8px; border-radius: 10px; border: 2px solid transparent;
+            background: #202020; cursor: pointer; transition: transform 0.2s, border-color 0.2s;
+        }
+        .avatar-option img { width: 100%; max-width: 84px; aspect-ratio: 1; border-radius: 10px; object-fit: cover; }
+        .avatar-option span { font-size: 0.8rem; color: var(--text-gray); }
+        .avatar-option:hover { transform: translateY(-3px); border-color: #666; }
+        .avatar-option.selected { border-color: var(--netflix-red); background: #2a1214; }
+        .avatar-option.selected span { color: #fff; font-weight: bold; }
+        .upload-btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px; border: 2px dashed #555; border-radius: 8px; color: #ddd;
+            cursor: pointer; font-weight: bold; transition: all 0.2s;
+        }
+        .upload-btn:hover { border-color: #fff; color: #fff; background: #222; }
+        .btn-delete-profile {
+            width: 100%; margin-top: 12px; padding: 12px; background: transparent;
+            color: #ff6b6b; border: 1px solid #5a2a2a; border-radius: 4px;
+            font-weight: bold; cursor: pointer; transition: background 0.2s;
+        }
+        .btn-delete-profile:hover { background: #3a1517; }
+
+        /* ===== Ampliar portada ===== */
+        .modal-header-img { cursor: zoom-in; }
+        .zoom-hint {
+            position: absolute; left: 15px; bottom: 15px;
+            background: rgba(0,0,0,0.75); color: #fff; font-size: 0.85rem;
+            padding: 6px 12px; border-radius: 20px; pointer-events: none;
+        }
+        #modal-lightbox { z-index: 10002; cursor: zoom-out; }
+        #modal-lightbox img {
+            max-width: 92vw; max-height: 92vh; object-fit: contain;
+            border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+        }
+        input::-ms-reveal, input::-ms-clear { display: none; }
+        input::-webkit-credentials-auto-fill-button { visibility: hidden; position: absolute; right: 0; }
+        /* ===== Administrador ===== */
+        .role-select{width:100%;padding:16px;border-radius:4px;border:1px solid #333;background:#333;color:#fff;font-size:1rem}
+        #screen-admin{display:none;min-height:100vh;padding:100px 50px 50px}
+        .admin-tag{background:#fff;color:#000;font-weight:900;font-size:.7rem;padding:3px 8px;border-radius:3px;letter-spacing:1px}
+        .admin-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:15px;margin:25px 0}
+        .stat-card{background:linear-gradient(135deg,#1a1a1a,#2a080a);border:1px solid #333;border-radius:8px;padding:18px}
+        .stat-card{cursor:pointer;transition:.2s}
+        .stat-card:hover{border-color:var(--netflix-red);transform:translateY(-2px)}
+        .stat-card b{display:block;font-size:1.8rem;color:var(--netflix-red)}
+        .stat-card span{color:var(--text-gray);font-size:.85rem}
+        .admin-table{width:100%;border-collapse:collapse;background:var(--card-bg);border-radius:8px;overflow:hidden}
+        .admin-table th,.admin-table td{padding:10px 12px;text-align:left;border-bottom:1px solid #2a2a2a;font-size:.9rem}
+        .admin-table th{color:var(--text-gray);font-size:.75rem;text-transform:uppercase}
+        .admin-table img{width:42px;height:56px;object-fit:cover;border-radius:3px}
+        .admin-btn{background:#333;color:#fff;border:none;padding:7px 10px;border-radius:4px;cursor:pointer;margin-right:4px}
+        .admin-btn:hover{background:var(--netflix-red)}
+        .file-label{display:block;color:var(--text-gray);font-size:.8rem;margin-bottom:4px}
+        #modal-reader .modal-content{max-width:1000px;height:92vh}
+        #reader-frame{flex:1;width:100%;border:0;background:#fff;border-radius:8px}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+    <!-- 1. PANTALLA DE ACCESO (INICIAR SESIÓN / CREAR CUENTA) -->
+    <div id="screen-register">
+        <div class="login-header">
+            <div class="brand-logo">BiblioFlix</div>
+        </div>
+        <div class="login-box">
+
+            <!-- INICIAR SESIÓN -->
+            <div id="auth-login">
+                <h2>Iniciar sesión</h2>
+                <form id="form-login" onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <input type="text" id="login-email" placeholder="Correo electrónico" autocomplete="off" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="login-password" placeholder="Contraseña" autocomplete="current-password" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('login-password', this)"></i>
+                    </div>
+                    <div class="auth-error" id="login-error"></div>
+                    <button type="submit" class="btn-netflix">Iniciar sesión</button>
+                </form>
+                <p class="auth-switch">¿Primera vez aquí? <a onclick="showAuth('register')">Crea una cuenta</a></p>
+            </div>
+
+            <!-- CREAR CUENTA -->
+            <div id="auth-register" style="display:none;">
+                <h2>Crear una cuenta</h2>
+                <form id="form-register" onsubmit="handleRegister(event)">
+                    <div class="input-group">
+                        <input type="text" id="reg-name" placeholder="Ingresa tu nombre" required>
+                    </div>
+                    <div class="input-group">
+                        <select id="reg-role" class="role-select" onchange="document.getElementById('reg-code-group').style.display=this.value==='admin'?'block':'none'">
+                            <option value="user">Soy lector (compro, alquilo y leo)</option>
+                            <option value="admin">Soy administrador (subo libros y PDF)</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="reg-code-group" style="display:none;">
+                        <input type="password" id="reg-code" placeholder="Código de administrador">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="reg-email" placeholder="Correo electrónico" autocomplete="off" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="reg-password" placeholder="Ingresar contraseña" autocomplete="new-password" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('reg-password', this)"></i>
+                    </div>
+                    <div class="auth-error" id="register-error"></div>
+                    <button type="submit" class="btn-netflix">Continuar</button>
+                </form>
+                <p class="auth-switch">¿Ya tienes cuenta? <a onclick="showAuth('login')">Inicia sesión</a></p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 2. PANTALLA SELECCIÓN DE PERFIL -->
+    <div id="screen-profiles">
+        <h1 class="profiles-title">¿Quién está leyendo hoy?</h1>
+        <div class="profiles-container" id="profiles-container"></div>
+    </div>
+
+    <!-- 3. PANTALLA PRINCIPAL BIBLIOFLIX -->
+    <div id="screen-app">
+        <!-- Navbar -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-left">
+                <div class="brand-logo">BiblioFlix</div>
+                <ul class="nav-links">
+                    <li><a onclick="showHomeScreen()">Inicio</a></li>
+                    <li><a onclick="openMyLibrary()">📚 Mi Biblioteca</a></li>
+                    <li><a onclick="openCategoryView('Novela Latinoamericana')">Novelas</a></li>
+                    <li><a onclick="openCategoryView('Clásicos Universales')">Clásicos</a></li>
+                    <li><a onclick="openCategoryView('Ciencia Ficción y Fantasía')">Sci-Fi</a></li>
+                    <li><a onclick="openCategoryView('Poesía y Teatro')">Poesía</a></li>
+                    <li><a onclick="openCategoryView('Ensayo y Narrativa')">Ensayo</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Buscar libro o autor..." onkeyup="filterBooks()">
+                </div>
+                <button class="btn-logout" onclick="switchProfile()" title="Cambiar de perfil"><i class="fas fa-users"></i> Perfiles</button>
+                <button class="btn-logout" onclick="handleLogout()" title="Cerrar sesión"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                <img id="nav-user-avatar" src="" class="current-user-avatar" title="Editar Perfil" onclick="openProfileEditModal(appState.selectedProfileIndex)">
+            </div>
+        </nav>
+
+        <!-- Contenedor Principal (Inicio) -->
+        <div id="main-content-area">
+            <div class="hero">
+                <div class="hero-tag">BIBLIOFLIX TIENDA VIRTUAL</div>
+                <h1 class="hero-title" id="hero-title">Cien años de soledad</h1>
+                <p class="hero-desc" id="hero-desc">La obra maestra del realismo mágico narra la épica historia de la familia Buendía en el mágico pueblo de Macondo.</p>
+                <button class="btn-hero" onclick="openDetailModal(1)"><i class="fas fa-shopping-cart"></i> Ver Obra y Comprar</button>
+            </div>
+            <div class="content-sections" id="categories-container"></div>
+        </div>
+
+        <!-- Vista de Categoría Completa -->
+        <div id="screen-category-view" class="page-view">
+            <button class="back-btn" onclick="showHomeScreen()"><i class="fas fa-arrow-left"></i> Volver al Inicio</button>
+            <h1 id="cat-view-title" style="margin-top: 20px; font-size: 2.5rem;">Categoría</h1>
+            <div class="catalog-grid" id="category-grid-container"></div>
+        </div>
+
+        <!-- Vista de "Mi Biblioteca" -->
+        <div id="screen-my-library" class="page-view">
+            <button class="back-btn" onclick="showHomeScreen()"><i class="fas fa-arrow-left"></i> Volver al Inicio</button>
+
+            <div style="margin-top: 25px;" class="my-library-banner">
+                <i class="fas fa-book-reader"></i>
+                <div>
+                    <h1 style="font-size: 2.2rem; margin-bottom: 5px;">Mi Estantería Personal</h1>
+                    <p style="color: var(--text-gray);">Aquí encontrarás todos los libros que has adquirido y alquilado para disfrutar en cualquier momento.</p>
+                </div>
+            </div>
+
+            <div class="catalog-grid" id="my-library-grid-container"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DETALLE, SINOPSIS Y ACCIONES -->
+    <div class="modal" id="modal-detail">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('modal-detail')">&times;</button>
+            <div class="modal-header-img" id="modal-img" onclick="openCoverLightbox()" title="Toca para ampliar la portada"><div class="zoom-hint"><i class="fas fa-search-plus"></i> Toca para ampliar</div></div>
+            <div class="modal-body">
+                <h2 class="modal-title" id="modal-title">Título del Libro</h2>
+                <div class="modal-subtitle" id="modal-subtitle">Autor - Editorial</div>
+                <p class="modal-synopsis" id="modal-synopsis">Sinopsis de la obra...</p>
+
+                <div class="store-actions" id="modal-store-actions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CENTRAL PARA MENSAJES MOTIVADORES (aparece en medio de la pantalla, con X para cerrar) -->
+    <div class="modal" id="modal-center-message">
+        <div class="modal-center-card">
+            <button class="modal-close" onclick="closeModal('modal-center-message')">&times;</button>
+            <i class="fas fa-award main-icon" id="center-msg-icon"></i>
+            <h3 id="center-msg-title">¡Felicidades!</h3>
+            <p id="center-msg-text">Mensaje motivador...</p>
+            <button class="btn-netflix" onclick="closeModal('modal-center-message')">¡A leer con pasión!</button>
+        </div>
+    </div>
+
+    <!-- PANEL DEL ADMINISTRADOR -->
+    <div id="screen-admin">
+        <nav class="navbar scrolled">
+            <div class="nav-left"><div class="brand-logo">BiblioFlix</div><span class="admin-tag">ADMINISTRADOR</span></div>
+            <div class="nav-right">
+                <button class="btn-add-book" onclick="openAdminBook()"><i class="fas fa-plus"></i> Nuevo libro</button>
+                <button class="btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Salir</button>
+            </div>
+        </nav>
+        <h1>Panel de administración</h1>
+        <div class="admin-stats" id="admin-stats"></div>
+        <div style="overflow-x:auto;">
+            <table class="admin-table"><thead><tr><th></th><th>Título</th><th>Categoría</th><th>Compra</th><th>Alquiler</th><th>PDF</th><th>Compras / Alq.</th><th></th></tr></thead><tbody id="admin-tbody"></tbody></table>
+        </div>
+        <h2 style="margin:35px 0 12px;">Usuarios</h2>
+        <div style="overflow-x:auto;">
+            <table class="admin-table"><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Registro</th><th>Compras</th><th>Alquileres activos</th></tr></thead><tbody id="admin-users"></tbody></table>
+        </div>
+        <div id="admin-requests"></div>
+        <h2 style="margin:35px 0 12px;">Actividad reciente</h2>
+        <div id="admin-activity"></div>
+    </div>
+
+    <!-- MODAL LIBRO (ADMIN: crear / editar) -->
+    <div class="modal" id="modal-admin-book">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('modal-admin-book')">&times;</button>
+            <div class="modal-body">
+                <h2 id="ab-heading">Nuevo libro</h2><br>
+                <form class="form-grid" onsubmit="saveAdminBook(event)">
+                    <input type="text" id="ab-title" placeholder="Título" required class="full-width">
+                    <input type="text" id="ab-author" placeholder="Autor" required>
+                    <input type="text" id="ab-editorial" placeholder="Editorial" required>
+                    <select id="ab-category" class="full-width"><option value="Novela Latinoamericana">Novela Latinoamericana</option><option value="Clásicos Universales">Clásicos Universales</option><option value="Ciencia Ficción y Fantasía">Ciencia Ficción y Fantasía</option><option value="Poesía y Teatro">Poesía y Teatro</option><option value="Ensayo y Narrativa">Ensayo y Narrativa</option></select>
+                    <input type="number" id="ab-buy" placeholder="Precio compra $" step="0.01" min="0" required>
+                    <input type="number" id="ab-rent" placeholder="Precio alquiler $" step="0.01" min="0" required>
+                    <textarea id="ab-synopsis" placeholder="Sinopsis" required class="full-width"></textarea>
+                    <input type="url" id="ab-cover-url" placeholder="URL de la portada (o sube una imagen abajo)" class="full-width">
+                    <div class="full-width"><span class="file-label">Imagen de portada (opcional)</span><input type="file" id="ab-cover-file" accept="image/*"></div>
+                    <div class="full-width"><span class="file-label">Archivo PDF del libro</span><input type="file" id="ab-pdf" accept="application/pdf"></div>
+                    <div class="auth-error full-width" id="ab-error"></div>
+                    <button type="submit" class="btn-netflix full-width" style="margin-top:0;">Guardar libro</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETALLE DE ESTADÍSTICAS (admin) -->
+    <div class="modal" id="modal-stat">
+        <div class="modal-content" style="max-width:900px;">
+            <button class="modal-close" onclick="closeModal('modal-stat')">&times;</button>
+            <div class="modal-body"><h2 id="stat-title"></h2><br><div id="stat-body"></div></div>
+        </div>
+    </div>
+
+    <!-- LECTOR DE PDF (usuario) -->
+    <div class="modal" id="modal-reader">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('modal-reader')">&times;</button>
+            <a id="reader-open" target="_blank" rel="noopener" style="color:#fff;font-size:.85rem;padding:6px 40px 8px 4px;">Abrir en una pestaña nueva ↗</a>
+            <iframe id="reader-frame" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <!-- MODAL GESTIÓN DE PERFILES -->
+    <div class="modal" id="modal-profile">
+        <div class="modal-content" style="max-width: 520px;">
+            <button class="modal-close" onclick="closeModal('modal-profile')">&times;</button>
+            <div class="modal-body">
+                <h2 id="profile-modal-title">Editar perfil</h2>
+                <div class="profile-editor-head" style="margin-top:15px;">
+                    <img id="profile-preview" class="profile-preview" alt="Vista previa">
+                </div>
+                <form id="form-profile-edit" onsubmit="handleSaveProfile(event)">
+                    <label class="profile-editor-label" for="edit-profile-name">Nombre del lector</label>
+                    <input type="text" id="edit-profile-name" class="profile-editor-input" maxlength="20" placeholder="Escribe tu nombre" required>
+
+                    <label class="profile-editor-label">Elige un avatar</label>
+                    <div class="avatar-grid" id="avatar-grid"></div>
+
+                    <label class="profile-editor-label">O usa tu propia foto</label>
+                    <label class="upload-btn">
+                        <i class="fas fa-camera"></i> Subir foto
+                        <input type="file" id="profile-photo-input" accept="image/*" hidden onchange="handleProfilePhoto(event)">
+                    </label>
+
+                    <div class="auth-error" id="profile-error" style="margin-top:12px;"></div>
+                    <button type="submit" class="btn-netflix">Guardar cambios</button>
+                    <button type="button" class="btn-delete-profile" id="btn-delete-profile" onclick="deleteProfile()"><i class="fas fa-trash"></i> Eliminar este perfil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- PORTADA AMPLIADA -->
+    <div class="modal" id="modal-lightbox" onclick="closeModal('modal-lightbox')">
+        <button class="modal-close" onclick="closeModal('modal-lightbox')">&times;</button>
+        <img id="lightbox-img" alt="Portada ampliada">
+    </div>
+
+    <script>
+        // BASE DE DATOS DE LIBROS
+        let defaultBooks = [
+            { id: 1, title: 'Cien años de soledad', author: 'Gabriel García Márquez', editorial: 'Sudamericana', category: 'Novela Latinoamericana', priceBuy: 18.99, priceRent: 5.99, synopsis: 'Considerada una de las obras maestras de la literatura hispanoamericana y universal, esta novela narra la épica e inolvidable historia de la familia Buendía a lo largo de siete generaciones en el mítico y fundacional pueblo de Macondo. La narración entrelaza de forma magistral elementos cotidianos con el realismo mágico, explorando temas profundos como la soledad colectiva e individual, el destino cíclico de los seres humanos, la locura, el amor apasionado y la inevitabilidad de la tragedia histórica.', cover: 'https://upload.wikimedia.org/wikipedia/commons/b/bb/Cien_a%C3%B1os_de_soledad_de_Gabriel_Garc%C3%ADa_M%C3%A1rquez_%28portada%29.jpg', originalCover: 'https://upload.wikimedia.org/wikipedia/commons/b/bb/Cien_a%C3%B1os_de_soledad_de_Gabriel_Garc%C3%ADa_M%C3%A1rquez_%28portada%29.jpg' },
+            { id: 2, title: 'Pedro Páramo', author: 'Juan Rulfo', editorial: 'FCE', category: 'Novela Latinoamericana', priceBuy: 14.99, priceRent: 4.50, synopsis: 'Juan Preciado emprende un viaje cargado de promesas hacia el polvoriento, desértico y fantasmal pueblo de Comala con el firme propósito de encontrar a su padre, a quien nunca conoció: el cacique Pedro Páramo. Sin embargo, al llegar descubre que el lugar está habitado únicamente por los ecos, murmullos y memorias persistentes de almas en pena que reviven sus culpas, amores y silencios en una atmósfera de profunda poesía sombría.', cover: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Pedro_P%C3%A1ramo_%28cover%29.jpg', originalCover: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Pedro_P%C3%A1ramo_%28cover%29.jpg' },
+            { id: 3, title: 'Aura', author: 'Carlos Fuentes', editorial: 'Era', category: 'Novela Latinoamericana', priceBuy: 12.50, priceRent: 3.99, synopsis: 'Un joven historiador llamado Felipe Montero responde a un extraño anuncio clasificado que lo lleva a una vetusta y oscura casona en el centro de la Ciudad de México. Allí es contratado por una anciana viuda para ordenar las memorias de su difunto marido. En ese ambiente opresivo y casi sobrenatural, Felipe conoce a la enigmática y fascinante sobrina de la dueña, Aura, desencadenando una trama hipnótica sobre la identidad, la obsesión y el tiempo circular.', cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=400&auto=format&fit=crop' },
+            { id: 4, title: 'La ciudad y los perros', author: 'Mario Vargas Llosa', editorial: 'Seix Barral', category: 'Novela Latinoamericana', priceBuy: 16.50, priceRent: 5.00, synopsis: 'Una radiografía implacable, cruda y profunda de la vida interior dentro del Colegio Militar Leoncio Prado en Lima. En este internado, un grupo de adolescentes conocidos como "los perros" convive en medio de un régimen de disciplina militar estricta, violencia soterrada, códigos de honor distorsionados y rivalidades intensas. La novela expone con maestría la pérdida de la inocencia juvenil frente a una sociedad intolerante y autoritaria.', cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop' },
+            { id: 5, title: 'El túnel', author: 'Ernesto Sabato', editorial: 'Sur', category: 'Novela Latinoamericana', priceBuy: 13.00, priceRent: 4.00, synopsis: 'Desde una celda de prisión, el pintor Juan Pablo Castel confiesa de manera directa y visceral los motivos que lo llevaron a asesinar a María Iribarne, la única mujer que parecía conectar genuinamente con su mente atormentada y su visión sombría de la humanidad. A través de un análisis psicológico penetrante, la obra indaga en los celos patológicos, la incomunicación existencial y los oscuros laberintos de la psique.', cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=400&auto=format&fit=crop' },
+            { id: 6, title: 'Don Quijote de la Mancha', author: 'Miguel de Cervantes', editorial: 'Robles', category: 'Clásicos Universales', priceBuy: 22.00, priceRent: 6.99, synopsis: 'Las divertidas, profundas e icónicas aventuras del hidalgo Alonso Quijano, quien, tras enloquecer por leer innumerables libros de caballería, decide armarse caballero andante bajo el nombre de Don Quijote. Junto a su fiel, sabio y pragmático escudero Sancho Panza, recorre los caminos de España enfrentándose a molinos de viento y enredándose en malentendidos legendarios que contraponen el idealismo puro con la cruda realidad.', cover: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Don_Quijote_de_la_Mancha_%281605%29._Portada_-_Biblioteca_Nacional_de_Espana.jpg', originalCover: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Don_Quijote_de_la_Mancha_%281605%29._Portada_-_Biblioteca_Nacional_de_Espana.jpg' },
+            { id: 7, title: 'Crimen y castigo', author: 'Fiódor Dostoyevski', editorial: 'Russian Messenger', category: 'Clásicos Universales', priceBuy: 17.50, priceRent: 5.50, synopsis: 'Rodión Raskólnikov, un exestudiante sumido en la miseria absoluta en las calles gélidas de San Petersburgo, concibe una teoría audaz sobre la existencia de hombres extraordinarios situados más allá del bien y del mal. Convencido de su argumento, comete un asesinato atroz que desata de inmediato una tormentosa, asfixiante y profunda agonía psicológica, culpa moral y un anhelo urgente de redención.', cover: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=400&auto=format&fit=crop' },
+            { id: 8, title: 'Orgullo y prejuicio', author: 'Jane Austen', editorial: 'Egerton', category: 'Clásicos Universales', priceBuy: 14.00, priceRent: 4.50, synopsis: 'En la Inglaterra rural del siglo XIX, la inteligente, independiente y aguda Elizabeth Bennet debe lidiar con las presiones familiares orientadas al matrimonio ventajoso. Su camino se cruza repetidamente con el del rico y aparentemente arrogante señor Darcy. A través de malentendidos sociales, ironía refinada y evolución personal, ambos aprenderán a superar sus propios defectos de carácter para dar paso a un amor genuino.', cover: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=400&auto=format&fit=crop' },
+            { id: 9, title: 'Frankenstein', author: 'Mary Shelley', editorial: 'Lackington', category: 'Clásicos Universales', priceBuy: 13.50, priceRent: 4.20, synopsis: 'El joven y ambicioso científico Victor Frankenstein logra desentrañar el secreto de la vida artificial, logrando animar un cuerpo construido con restos mortales. Sin embargo, horrorizado ante el aspecto de su propia criatura, la abandona a su suerte. El ser, dotado de conciencia y sensibilidad, emprende un camino de soledad y rechazo que lo llevará a exigir justicia a su creador en una tragedia gótica inolvidable.', cover: 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?q=80&w=400&auto=format&fit=crop' },
+            { id: 10, title: 'La metamorfosis', author: 'Franz Kafka', editorial: 'Kurt Wolff', category: 'Clásicos Universales', priceBuy: 11.00, priceRent: 3.50, synopsis: 'Una mañana cualquiera, tras un sueño intranquilo, el devoto y esforzado viajante de comercio Gregor Samsa despierta convertido en una monstruosa criatura insectoide en su propia cama. Lejos de despertar compasión inmediata, su transformación desencadena una crisis familiar profunda donde se ponen de manifiesto la fragilidad del afecto utilitario, el rechazo ante la diferencia y el absurdo de la existencia moderna.', cover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=400&auto=format&fit=crop' },
+            { id: 11, title: '1984', author: 'George Orwell', editorial: 'Secker & Warburg', category: 'Ciencia Ficción y Fantasía', priceBuy: 16.00, priceRent: 5.00, synopsis: 'En una sociedad distópica controlada férreamente por el Partido y la figura omnipresente del Gran Hermano, Winston Smith trabaja en el Ministerio de la Verdad reescribiendo registros históricos para adaptarlos al relato oficial. Abrumado por la vigilancia constante de las telepantallas y la policía del pensamiento, Winston se arriesga a mantener un romance prohibido y a buscar la libertad individual.', cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop' },
+            { id: 12, title: 'Fahrenheit 451', author: 'Ray Bradbury', editorial: 'Ballantine', category: 'Ciencia Ficción y Fantasía', priceBuy: 15.00, priceRent: 4.80, synopsis: 'En un futuro opresivo donde los libros están terminantemente prohibidos porque estimulan el pensamiento crítico y la infelicidad, los bomberos tienen la misión exclusiva de localizar y quemar bibliotecas enteras. Guy Montag es uno de estos oficiales, hasta que un encuentro casual con una joven vecina de espíritu libre lo hace cuestionar toda su realidad y el valor del conocimiento.', cover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop' },
+            { id: 13, title: 'El hobbit', author: 'J.R.R. Tolkien', editorial: 'Allen & Unwin', category: 'Ciencia Ficción y Fantasía', priceBuy: 18.50, priceRent: 5.80, synopsis: 'Bilbo Bolsón es un pacífico y acomodado hobbit que disfruta de la tranquilidad de su hogar en La Comarca. Su rutina se ve alterada cuando el mago Gandalf y un grupo de trece enanos liderados por Thorin Escudo de Roble se presentan en su puerta para reclutarlo como saqueador en una peligrosa misión destinada a recuperar el reino perdido de Erebor y el tesoro custodiado por el feroz dragón Smaug.', cover: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=400&auto=format&fit=crop' },
+            { id: 14, title: 'Dune', author: 'Frank Herbert', editorial: 'Chilton', category: 'Ciencia Ficción y Fantasía', priceBuy: 20.00, priceRent: 6.50, synopsis: 'Ambientada en un vasto futuro intergaláctico, la novela sigue al joven Paul Atreides, cuya familia noble acepta la administración de Arrakis, un planeta desértico y hostil que constituye la única fuente en el universo de la especia melange, una sustancia capaz de prolongar la vida y expandir la conciencia. Una obra cumbre sobre la política, la ecología y el destino mesiánico.', cover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=400&auto=format&fit=crop' },
+            { id: 15, title: 'Yo, robot', author: 'Isaac Asimov', editorial: 'Gnome Press', category: 'Ciencia Ficción y Fantasía', priceBuy: 14.50, priceRent: 4.50, synopsis: 'Una colección fascinante de relatos interconectados narrados a través de entrevistas a la robopsicóloga Susan Calvin. El libro explora la evolución de los cerebros positrónicos y las paradojas morales que surgen al aplicar estrictamente las Tres Leyes de la Robótica en situaciones donde la lógica de las máquinas choca con la impredecible naturaleza humana.', cover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=400&auto=format&fit=crop' },
+            { id: 16, title: 'Poeta en Nueva York', author: 'Federico García Lorca', editorial: 'Séneca', category: 'Poesía y Teatro', priceBuy: 13.00, priceRent: 4.00, synopsis: 'Escrito durante la estancia de Federico García Lorca en Estados Unidos, este poemario representa un grito desgarrador de dolor, asombro y protesta ante la civilización moderna, el capitalismo industrial deshumanizado, la soledad de las grandes metrópolis y la discriminación racial, expresados mediante un lenguaje vanguardista y profundamente simbólico.', cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop' },
+            { id: 17, title: 'Bodas de sangre', author: 'Federico García Lorca', editorial: 'Cruz', category: 'Poesía y Teatro', priceBuy: 11.50, priceRent: 3.80, synopsis: 'Tragedia lírica en verso y prosa que examina las fuerzas telúricas de la pasión amorosa, el honor familiar y el destino inevitable en el ámbito rural andaluz. Durante el día de su boda, la novia huye con su antiguo amor Leonardo, desatando una persecución implacable en el bosque donde la muerte y la naturaleza se conjugan para cobrar su tributo de sangre.', cover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop' },
+            { id: 18, title: 'Veinte poemas de amor', author: 'Pablo Neruda', editorial: 'Nascimiento', category: 'Poesía y Teatro', priceBuy: 12.00, priceRent: 3.90, synopsis: 'Uno de los poemarios juveniles más célebres y leídos de la historia literaria hispanoamericana. A través de imágenes profundamente arraigadas en la naturaleza de los paisajes chilenos, el mar y los cuerpos femeninos, Neruda canta con una mezcla inigualable de sensualidad, melancolía ardiente y fervor a la experiencia inolvidable del primer amor y el dolor de la pérdida.', cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=400&auto=format&fit=crop' },
+            { id: 19, title: 'La vida es sueño', author: 'Calderón de la Barca', editorial: 'Quiñones', category: 'Poesía y Teatro', priceBuy: 12.50, priceRent: 4.00, synopsis: 'Pieza cumbre del teatro barroco español que plantea cuestiones filosóficas universales sobre el libre albedrío, la predestinación, la fugacidad del poder y la delgada línea de distinción entre la realidad de la vigilia y la ilusión de los sueños, encarnadas en el inolvidable dilema del príncipe Segismundo encerrado en una torre.', cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=400&auto=format&fit=crop' },
+            { id: 20, title: 'Fuenteovejuna', author: 'Lope de Vega', editorial: 'RAE', category: 'Poesía y Teatro', priceBuy: 11.00, priceRent: 3.50, synopsis: 'Dramatización clásica basada en hechos históricos reales acaecidos en un pueblo cordobés. Los habitantes, hartos de los abusos intolerables, la tiranía y la opresión ejercida por el comendador local, se rebelan colectivamente y le dan muerte. Cuando los jueces reales investigan el crimen para hallar al culpable, todo el pueblo responde con una sola voz legendaria: "Fuenteovejuna lo hizo".', cover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=400&auto=format&fit=crop' },
+            { id: 21, title: 'El laberinto de la soledad', author: 'Octavio Paz', editorial: 'Cuadernos Amer.', category: 'Ensayo y Narrativa', priceBuy: 15.50, priceRent: 4.90, synopsis: 'Conjunto de ensayos lúcidos y profundos en los cuales Octavio Paz analiza la identidad, la historia, la psicología y las máscaras sociales del pueblo mexicano frente a la modernidad occidental, el peso del pasado colonial y la vivencia íntima de la soledad como condición ontológica del ser humano.', cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=400&auto=format&fit=crop' },
+            { id: 22, title: 'Las venas abiertas de América Latina', author: 'Eduardo Galeano', editorial: 'Monthly Review', category: 'Ensayo y Narrativa', priceBuy: 16.50, priceRent: 5.20, synopsis: 'Una obra de referencia indispensable que recorre en formato ensayístico la historia de la expoliación económica, el saqueo de recursos naturales y la opresión política sufrida por el continente latinoamericano desde la llegada de los colonizadores europeos hasta el siglo XX, combinando rigor histórico con un estilo literario apasionado.', cover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=400&auto=format&fit=crop' },
+            { id: 23, title: 'El extranjero', author: 'Albert Camus', editorial: 'Gallimard', category: 'Ensayo y Narrativa', priceBuy: 13.50, priceRent: 4.20, synopsis: 'Meursault es un empleado francés que vive en Argelia y se caracteriza por una inquebrantable sinceridad y una profunda apatía ante las convenciones sociales. Tras asistir impasible al funeral de su madre y verse involucrado en un homicidio bajo el sol abrasador de la playa, se enfrenta a un juicio absurdo donde se le condena más por su indiferencia emocional que por el acto en sí.', cover: 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?q=80&w=400&auto=format&fit=crop' },
+            { id: 24, title: 'Meditaciones', author: 'Marco Aurelio', editorial: 'Gredos', category: 'Ensayo y Narrativa', priceBuy: 14.00, priceRent: 4.50, synopsis: 'Colección de apuntes personales y reflexiones íntimas escritas por el emperador romano Marco Aurelio durante sus campañas militares. La obra constituye uno de los testimonios más importantes de la filosofía estoica, ofreciendo preceptos eternos sobre el autocontrol emocional, la aceptación serena del destino, la integridad moral y el cumplimiento del deber cívico.', cover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=400&auto=format&fit=crop' },
+            { id: 25, title: 'Sobre la brevedad de la vida', author: 'Séneca', editorial: 'Gredos', category: 'Ensayo y Narrativa', priceBuy: 12.00, priceRent: 3.80, synopsis: 'En este célebre tratado de filosofía estoica, Séneca argumenta de manera persuasiva que la vida humana no es intrínsecamente corta, sino que somos nosotros quienes la desperdiciamos en vanidades, distracciones y preocupaciones fútiles. Un recordatorio atemporal sobre la importancia de administrar el tiempo con sabiduría y conciencia.', cover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=400&auto=format&fit=crop', originalCover: 'https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=400&auto=format&fit=crop' }
+        ];
+
+        // ===== PORTADAS =====
+        // URL de portada (Open Library por ISBN). Si alguna falla o no existe, se busca sola en Google Books.
+        const olCover = (isbn) => `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`;
+        const COVER_ISBN = {
+            1: '9780307474728',   // Cien años de soledad
+            2: '9780802133908',   // Pedro Páramo
+            6: '9780060934347',   // Don Quijote de la Mancha
+            7: '9780143107637',   // Crimen y castigo
+            8: '9780141439518',   // Orgullo y prejuicio
+            9: '9780486282114',   // Frankenstein
+            10: '9780553213690',  // La metamorfosis
+            11: '9780451524935',  // 1984
+            12: '9781451673319',  // Fahrenheit 451
+            13: '9780547928227',  // El hobbit
+            14: '9780441172719',  // Dune
+            15: '9780553382563',  // Yo, robot
+            23: '9780679720201',  // El extranjero
+            24: '9780812968255'   // Meditaciones
+        };
+        defaultBooks.forEach(b => {
+            const url = COVER_ISBN[b.id] ? olCover(COVER_ISBN[b.id]) : '';
+            b.cover = url;
+            b.originalCover = url;
+        });
+
+        const COVER_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="520" viewBox="0 0 400 520"><rect width="400" height="520" fill="#222"/><text x="200" y="280" font-size="90" text-anchor="middle" fill="#555">📖</text></svg>'
+        );
+        const coverSrc = (b) => {
+            const override = appState.currentUser && appState.currentUser.coverOverrides && appState.currentUser.coverOverrides[b.id];
+            const c = override || b.cover;
+            return c ? c.replace(/zoom=1/, 'zoom=2') : COVER_PLACEHOLDER;
+        };
+
+        // Catálogo base (compartido). Los libros que agrega cada persona se guardan en SU perfil.
+        const BOOKS_KEY = 'biblioflix_books_v2';
+        const LEGACY_CUSTOM_KEY = 'biblioflix_legacy_custom';
+        let baseBooks = (function () {
+            try { const s = JSON.parse(localStorage.getItem(BOOKS_KEY) || 'null'); if (s && s.length) return s; } catch (e) {}
+            return defaultBooks.slice();
+        })();
+        let booksData = baseBooks.slice();
+
+        let appState = {
+            currentUser: null,
+            profiles: [
+                { id: 1, name: 'Lector', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop' }
+            ],
+            selectedProfileIndex: null,
+            editingProfileIndex: null,
+            myLibrary: []
+        };
+
+        let selectedBookId = null;
+
+        function saveBooksToStorage() {
+            persistCatalog();
+            saveUserData();
+        }
+
+        function saveLibraryToStorage() {
+            if (appState.currentUser) appState.currentUser.library = appState.myLibrary;
+            saveUserData();
+        }
+
+        function togglePasswordVisibility(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                iconElement.classList.remove('fa-eye');
+                iconElement.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                iconElement.classList.remove('fa-eye-slash');
+                iconElement.classList.add('fa-eye');
+            }
+        }
+
+        // ===== AVATARES ANIMADOS (SVG con parpadeo) =====
+        const AVATAR_STYLE = '<style>.e{animation:blink 4s infinite;transform-box:fill-box;transform-origin:center}@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}</style>';
+        const svgAvatar = (bg, inner) => 'data:image/svg+xml;utf8,' + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">${AVATAR_STYLE}<rect width="200" height="200" fill="${bg}"/>${inner}</svg>`
+        );
+        const AVATAR_OPTIONS = [
+            { name: 'Gato', src: svgAvatar('#2d6cdf', `<polygon points="48,78 58,26 94,58" fill="#f4a259"/><polygon points="152,78 142,26 106,58" fill="#f4a259"/><polygon points="60,66 63,42 82,58" fill="#f7b7c3"/><polygon points="140,66 137,42 118,58" fill="#f7b7c3"/><circle cx="100" cy="112" r="62" fill="#f4a259"/><ellipse class="e" cx="78" cy="104" rx="8" ry="10" fill="#222"/><ellipse class="e" cx="122" cy="104" rx="8" ry="10" fill="#222"/><polygon points="93,120 107,120 100,129" fill="#e8798f"/><path d="M100 129 Q92 142 82 136 M100 129 Q108 142 118 136" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M60 120 L30 114 M60 128 L30 132 M140 120 L170 114 M140 128 L170 132" stroke="#222" stroke-width="2" stroke-linecap="round"/>`) },
+            { name: 'Panda', src: svgAvatar('#46d369', `<circle cx="56" cy="58" r="22" fill="#222"/><circle cx="144" cy="58" r="22" fill="#222"/><circle cx="100" cy="110" r="62" fill="#fff"/><ellipse cx="76" cy="104" rx="14" ry="19" fill="#222" transform="rotate(20 76 104)"/><ellipse cx="124" cy="104" rx="14" ry="19" fill="#222" transform="rotate(-20 124 104)"/><circle class="e" cx="77" cy="104" r="5" fill="#fff"/><circle class="e" cx="123" cy="104" r="5" fill="#fff"/><ellipse cx="100" cy="126" rx="10" ry="7" fill="#222"/><path d="M100 133 Q100 145 88 144 M100 133 Q100 145 112 144" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>`) },
+            { name: 'Robot', src: svgAvatar('#8e44ad', `<line x1="100" y1="52" x2="100" y2="32" stroke="#cfd8dc" stroke-width="5"/><circle cx="100" cy="26" r="8" fill="#ff5252"/><rect x="28" y="88" width="14" height="36" rx="6" fill="#90a4ae"/><rect x="158" y="88" width="14" height="36" rx="6" fill="#90a4ae"/><rect x="40" y="52" width="120" height="104" rx="22" fill="#cfd8dc"/><circle class="e" cx="76" cy="96" r="14" fill="#00e5ff"/><circle class="e" cx="124" cy="96" r="14" fill="#00e5ff"/><circle cx="76" cy="96" r="5" fill="#004d5a"/><circle cx="124" cy="96" r="5" fill="#004d5a"/><rect x="70" y="128" width="60" height="14" rx="7" fill="#455a64"/><path d="M82 128 V142 M94 128 V142 M106 128 V142 M118 128 V142" stroke="#cfd8dc" stroke-width="2"/>`) },
+            { name: 'Zorro', src: svgAvatar('#1abc9c', `<path d="M100 164 L44 104 L48 44 L88 74 Q100 70 112 74 L152 44 L156 104 Z" fill="#e67e22"/><path d="M100 164 L60 122 Q100 108 140 122 Z" fill="#fff"/><ellipse class="e" cx="80" cy="102" rx="7" ry="9" fill="#222"/><ellipse class="e" cx="120" cy="102" rx="7" ry="9" fill="#222"/><circle cx="100" cy="152" r="7" fill="#222"/>`) },
+            { name: 'Búho', src: svgAvatar('#e84393', `<polygon points="52,70 56,28 88,54" fill="#6d4c41"/><polygon points="148,70 144,28 112,54" fill="#6d4c41"/><ellipse cx="100" cy="116" rx="56" ry="62" fill="#8d6e63"/><ellipse cx="100" cy="150" rx="32" ry="28" fill="#d7ccc8"/><circle cx="76" cy="98" r="22" fill="#fff"/><circle cx="124" cy="98" r="22" fill="#fff"/><circle class="e" cx="76" cy="98" r="9" fill="#222"/><circle class="e" cx="124" cy="98" r="9" fill="#222"/><polygon points="92,112 108,112 100,130" fill="#ffb300"/>`) },
+            { name: 'Alien', src: svgAvatar('#2c3e50', `<line x1="78" y1="52" x2="64" y2="26" stroke="#7bdc65" stroke-width="4"/><circle cx="62" cy="24" r="6" fill="#7bdc65"/><line x1="122" y1="52" x2="136" y2="26" stroke="#7bdc65" stroke-width="4"/><circle cx="138" cy="24" r="6" fill="#7bdc65"/><ellipse cx="100" cy="108" rx="56" ry="62" fill="#7bdc65"/><g class="e"><ellipse cx="76" cy="100" rx="15" ry="22" fill="#111" transform="rotate(-15 76 100)"/></g><g class="e"><ellipse cx="124" cy="100" rx="15" ry="22" fill="#111" transform="rotate(15 124 100)"/></g><circle cx="71" cy="92" r="4" fill="#fff"/><circle cx="119" cy="92" r="4" fill="#fff"/><path d="M84 142 Q100 154 116 142" stroke="#1b5e20" stroke-width="3.5" fill="none" stroke-linecap="round"/>`) }
+        ];
+
+        // ===== CUENTAS (guardadas en este navegador) =====
+        const USERS_KEY = 'biblioflix_users';
+        const LAST_EMAIL_KEY = 'biblioflix_last_email';
+        const DEFAULT_AVATAR = AVATAR_OPTIONS[0].src;
+        let currentEmail = null;
+
+        // ===== BASE DE DATOS EN INTERNET (Supabase) =====
+        // Pega aquí los dos datos de tu proyecto (Project Settings > API). Si los dejas así, la página funciona solo en este navegador.
+        const SUPABASE_URL = 'https://rlbechnyaugcsjxszntr.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_qCHsy3X5cp4SyLJ8yXZ-jA_lLREyknn';
+        const sb = (window.supabase && !SUPABASE_URL.startsWith('PEGA'))
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        let usersCache = {}, activityCache = [], authId = null;
+
+        function getUsers() {
+            if (sb) return usersCache;
+            try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
+            catch (e) { return {}; }
+        }
+
+        function saveUsers(users) {
+            if (sb) { usersCache = users; return pushOwnUser(); }
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        async function hashPassword(pw) {
+            if (window.crypto && crypto.subtle) {
+                const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            let h = 5381;
+            for (let i = 0; i < pw.length; i++) h = ((h << 5) + h + pw.charCodeAt(i)) | 0;
+            return 'x' + h;
+        }
+
+        // Guarda el progreso de la cuenta activa (perfiles y Mi Biblioteca)
+        // Guarda el progreso de la cuenta activa: cada perfil guarda lo suyo (biblioteca, libros agregados, portadas)
+        function saveUserData() {
+            if (!currentEmail) return;
+            const users = getUsers();
+            if (!users[currentEmail]) return;
+            if (appState.currentUser) {
+                appState.currentUser.customBooks = booksData.filter(b => b.custom);
+            }
+            users[currentEmail].profiles = appState.profiles;
+            saveUsers(users);
+        }
+
+        const rowToUser = r => ({ id: r.id, name: r.name, email: r.email, role: r.role, createdAt: Date.parse(r.created_at), profiles: r.profiles || [] });
+        const sortBooks = l => l.sort((a, b) => ((b.id >= 100) - (a.id >= 100)) || (a.id >= 100 ? b.id - a.id : a.id - b.id));
+
+        async function pushOwnUser() {
+            const u = sb && authId && usersCache[currentEmail];
+            if (!u) return;
+            await sb.from('users_data').update({ profiles: u.profiles || [] }).eq('id', authId);
+        }
+
+        async function loadCatalog() {
+            const { data, error } = await sb.from('books').select('id,data');
+            if (error || !data || !data.length) return 0;
+            baseBooks = sortBooks(data.map(r => r.data));
+            booksData = baseBooks.slice();
+            return data.length;
+        }
+
+        async function seedCatalog() {
+            await sb.from('books').upsert(baseBooks.map(b => ({ id: b.id, data: b })));
+            for (const b of baseBooks) {
+                if (!b.hasPdf) continue;
+                const blob = await pdfGet(b.id).catch(() => null);
+                if (blob) await sb.storage.from('pdfs').upload(b.id + '.pdf', blob, { upsert: true, contentType: 'application/pdf' });
+            }
+        }
+
+        async function refreshAdmin() {
+            if (!sb || !authId) return;
+            const [u, a, b] = await Promise.all([
+                sb.from('users_data').select('*'),
+                sb.from('activity').select('*').order('created_at', { ascending: false }).limit(300),
+                sb.from('books').select('id,data')
+            ]);
+            if (u.data) { usersCache = {}; u.data.forEach(r => usersCache[r.email] = rowToUser(r)); }
+            if (a.data) activityCache = a.data.map(r => ({ t: Date.parse(r.created_at), type: r.type, name: r.name, email: r.email, book: r.book }));
+            if (b.data && b.data.length) baseBooks = sortBooks(b.data.map(r => r.data));
+            renderAdmin(); renderAdminExtra();
+        }
+
+        async function enterSession() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) return false;
+            const uid = session.user.id;
+            const remoteBooks = await loadCatalog();
+            let { data: me } = await sb.from('users_data').select('*').eq('id', uid).maybeSingle();
+            if (!me) { await new Promise(r => setTimeout(r, 800)); ({ data: me } = await sb.from('users_data').select('*').eq('id', uid).maybeSingle()); }
+            if (!me) { alert('No se pudo cargar tu cuenta. Intenta de nuevo.'); return false; }
+            authId = uid;
+            usersCache = {}; usersCache[me.email] = rowToUser(me);
+            if (me.role === 'admin') {
+                if (!remoteBooks) await seedCatalog();
+                await refreshAdmin();
+            }
+            startSession(me.email);
+            if (me.role === 'pending_admin') setTimeout(() => alert('Tu solicitud para ser administrador está pendiente de aprobación. Mientras tanto entras como lector.'), 500);
+            return true;
+        }
+
+        async function handleRegister(e) {
+            if (!sb) return handleRegisterLocal(e);
+            e.preventDefault();
+            const box = document.getElementById('register-error');
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+            const wantAdmin = document.getElementById('reg-role').value === 'admin';
+            box.innerText = 'Creando cuenta...';
+            const { data, error } = await sb.auth.signUp({ email, password, options: { data: { name, want_admin: wantAdmin } } });
+            if (error) {
+                box.innerText = /registered|already/i.test(error.message) ? 'Ese correo ya tiene una cuenta. Inicia sesión.' : /at least|6/i.test(error.message) ? 'La contraseña debe tener al menos 6 caracteres.' : error.message;
+                return;
+            }
+            if (!data.session) { box.innerText = 'Cuenta creada. Confirma tu correo y luego inicia sesión.'; return; }
+            box.innerText = '';
+            document.getElementById('form-register').reset();
+            if (await enterSession()) logActivity(usersCache[email] && usersCache[email].role === 'pending_admin' ? 'admin_request' : 'register');
+        }
+
+        async function handleLogin(e) {
+            if (!sb) return handleLoginLocal(e);
+            e.preventDefault();
+            const box = document.getElementById('login-error');
+            box.innerText = '';
+            const { error } = await sb.auth.signInWithPassword({
+                email: document.getElementById('login-email').value.trim().toLowerCase(),
+                password: document.getElementById('login-password').value
+            });
+            if (error) { box.innerText = 'Correo o contraseña incorrectos.'; return; }
+            document.getElementById('login-password').value = '';
+            await enterSession();
+        }
+
+        function handleLogout() {
+            if (!sb) return handleLogoutLocal();
+            saveUserData();
+            const p = pushOwnUser();
+            handleLogoutLocal();
+            usersCache = {}; authId = null;
+            Promise.resolve(p).finally(() => sb.auth.signOut());
+        }
+
+        async function setAdminRole(id, role) {
+            const { error } = await sb.from('users_data').update({ role }).eq('id', id);
+            if (error) alert('No se pudo cambiar: ' + error.message);
+            refreshAdmin();
+        }
+
+        function showAuth(mode) {
+            document.getElementById('auth-login').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('auth-register').style.display = mode === 'register' ? 'block' : 'none';
+            document.getElementById('login-error').innerText = '';
+            document.getElementById('register-error').innerText = '';
+        }
+
+        function startSession(email) {
+            const users = getUsers();
+            const user = users[email];
+            currentEmail = email;
+            localStorage.setItem(LAST_EMAIL_KEY, email);
+            localStorage.setItem('biblioflix_session', email);
+            localStorage.removeItem('biblioflix_profile');
+            if (user.role === 'admin') {
+                document.getElementById('screen-register').style.display = 'none';
+                showAdmin();
+                return;
+            }
+
+            const profiles = (user.profiles && user.profiles.length) ? user.profiles : [{ id: 1, name: user.name, avatar: DEFAULT_AVATAR }];
+
+            // Cada perfil tiene SU biblioteca, SUS libros agregados y SUS portadas
+            profiles.forEach((p, i) => {
+                if (!Array.isArray(p.library)) p.library = (i === 0 && Array.isArray(user.myLibrary)) ? user.myLibrary : [];
+                if (!Array.isArray(p.customBooks)) p.customBooks = [];
+                if (!p.coverOverrides) p.coverOverrides = {};
+            });
+
+            // Libros agregados antes de existir perfiles separados pasan al primer perfil
+            try {
+                const legacy = JSON.parse(localStorage.getItem(LEGACY_CUSTOM_KEY) || '[]');
+                if (legacy.length) {
+                    legacy.forEach(b => { b.custom = true; });
+                    profiles[0].customBooks = legacy.concat(profiles[0].customBooks);
+                }
+                localStorage.removeItem(LEGACY_CUSTOM_KEY);
+            } catch (err) {}
+
+            delete user.myLibrary;
+            user.profiles = profiles;
+            saveUsers(users);
+
+            appState.profiles = profiles;
+            appState.currentUser = null;
+            appState.selectedProfileIndex = null;
+            appState.myLibrary = [];
+            booksData = baseBooks.slice();
+
+            document.getElementById('screen-register').style.display = 'none';
+            renderProfilesScreen();
+            document.getElementById('screen-profiles').style.display = 'flex';
+        }
+
+        async function handleRegisterLocal(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+            const errorBox = document.getElementById('register-error');
+            const role = document.getElementById('reg-role').value;
+            if (role === 'admin' && document.getElementById('reg-code').value !== ADMIN_CODE) {
+                errorBox.innerText = 'Código de administrador incorrecto.';
+                return;
+            }
+
+            if (!email.includes('@') || !email.includes('.')) {
+                errorBox.innerText = 'Escribe un correo electrónico válido.';
+                return;
+            }
+            if (password.length < 4) {
+                errorBox.innerText = 'La contraseña debe tener al menos 4 caracteres.';
+                return;
+            }
+
+            const users = getUsers();
+            if (users[email]) {
+                errorBox.innerText = 'Ese correo ya tiene una cuenta. Inicia sesión.';
+                return;
+            }
+
+            // Si ya había libros guardados de antes (sin cuentas), se pasan a la primera cuenta
+            let legacyLibrary = [];
+            if (Object.keys(users).length === 0) {
+                try { legacyLibrary = JSON.parse(localStorage.getItem('biblioflix_mylibrary') || '[]'); } catch (err) {}
+            }
+
+            users[email] = {
+                name: name,
+                role: role,
+                createdAt: Date.now(),
+                email: email,
+                hash: await hashPassword(password),
+                profiles: [{ id: 1, name: name, avatar: DEFAULT_AVATAR }],
+                myLibrary: legacyLibrary
+            };
+            saveUsers(users);
+            document.getElementById('form-register').reset();
+            startSession(email);
+            if (role === 'user') logActivity('register');
+        }
+
+        async function handleLoginLocal(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+            const errorBox = document.getElementById('login-error');
+
+            const user = getUsers()[email];
+            if (!user) {
+                errorBox.innerText = 'No encontramos una cuenta con ese correo. Crea una cuenta primero.';
+                return;
+            }
+            if ((await hashPassword(password)) !== user.hash) {
+                errorBox.innerText = 'Contraseña incorrecta. Inténtalo de nuevo.';
+                return;
+            }
+            document.getElementById('login-password').value = '';
+            startSession(email);
+        }
+
+        function handleLogoutLocal() {
+            saveUserData();
+            localStorage.removeItem('biblioflix_session');
+            localStorage.removeItem('biblioflix_profile');
+            currentEmail = null;
+            appState.currentUser = null;
+            appState.selectedProfileIndex = null;
+            appState.myLibrary = [];
+            booksData = baseBooks.slice();
+            ['modal-detail', 'modal-center-message', 'modal-admin-book', 'modal-reader', 'modal-profile', 'modal-lightbox'].forEach(closeModal);
+            document.getElementById('screen-app').style.display = 'none';
+            document.getElementById('screen-profiles').style.display = 'none';
+            document.getElementById('screen-admin').style.display = 'none';
+            document.getElementById('screen-register').style.display = 'flex';
+            document.getElementById('search-input').value = '';
+            showAuth('login');
+        }
+
+        // Al abrir la página: si ya existe alguna cuenta, se muestra "Iniciar sesión"; si no, "Crear cuenta"
+        showAuth(sb || Object.keys(getUsers()).length > 0 ? 'login' : 'register');
+
+        function renderProfilesScreen() {
+            const container = document.getElementById('profiles-container');
+            container.innerHTML = '';
+
+            appState.profiles.forEach((profile, index) => {
+                container.innerHTML += `
+                    <div class="profile-card" onclick="selectProfile(${index})">
+                        <div class="profile-avatar-wrap">
+                            <img src="${profile.avatar}" class="profile-avatar" alt="${profile.name}">
+                            <div class="profile-edit-badge" title="Editar perfil" onclick="event.stopPropagation(); openProfileEditModal(${index})"><i class="fas fa-pen"></i></div>
+                        </div>
+                        <div class="profile-name">${profile.name}</div>
+                    </div>
+                `;
+            });
+
+            if (appState.profiles.length < 5) {
+                container.innerHTML += `
+                    <div class="add-profile-btn" onclick="openAddProfileModal()" title="Agregar Perfil">
+                        <i class="fas fa-plus-circle"></i>
+                        <span style="font-size: 0.9rem; font-weight: bold; margin-top:5px;">Añadir Perfil</span>
+                    </div>
+                `;
+            }
+        }
+
+        function selectProfile(index) {
+            const profile = appState.profiles[index];
+            if (!profile) return;
+            appState.selectedProfileIndex = index;
+            localStorage.setItem('biblioflix_profile', index);
+            appState.currentUser = profile;
+            appState.myLibrary = profile.library;
+            // El catálogo de este perfil: sus libros agregados + el catálogo base
+            booksData = profile.customBooks.concat(baseBooks);
+            document.getElementById('nav-user-avatar').src = profile.avatar;
+            document.getElementById('search-input').value = '';
+
+            document.getElementById('screen-profiles').style.display = 'none';
+            document.getElementById('screen-app').style.display = 'block';
+            showHomeScreen();
+        }
+
+        function switchProfile() {
+            saveUserData();
+            localStorage.removeItem('biblioflix_profile');
+            appState.currentUser = null;
+            appState.selectedProfileIndex = null;
+            appState.myLibrary = [];
+            booksData = baseBooks.slice();
+            ['modal-detail', 'modal-center-message', 'modal-reader', 'modal-profile', 'modal-lightbox'].forEach(closeModal);
+            document.getElementById('screen-app').style.display = 'none';
+            renderProfilesScreen();
+            document.getElementById('screen-profiles').style.display = 'flex';
+        }
+
+
+
+
+        // ===== EDITOR DE PERFIL =====
+        let profileDraft = { avatar: '' };
+
+        function renderAvatarGrid() {
+            document.getElementById('avatar-grid').innerHTML = AVATAR_OPTIONS.map((a, i) => `
+                <div class="avatar-option ${profileDraft.avatar === a.src ? 'selected' : ''}" onclick="pickAvatar(${i})">
+                    <img src="${a.src}" alt="${a.name}">
+                    <span>${a.name}</span>
+                </div>
+            `).join('');
+            document.getElementById('profile-preview').src = profileDraft.avatar;
+        }
+
+        function pickAvatar(i) {
+            profileDraft.avatar = AVATAR_OPTIONS[i].src;
+            document.getElementById('profile-error').innerText = '';
+            renderAvatarGrid();
+        }
+
+        // Foto propia: se recorta cuadrada y se reduce para que ocupe poco espacio
+        function handleProfilePhoto(e) {
+            const file = e.target.files[0];
+            const errorBox = document.getElementById('profile-error');
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                errorBox.innerText = 'Elige un archivo de imagen.';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const size = 300;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = size;
+                    canvas.height = size;
+                    const min = Math.min(img.width, img.height);
+                    canvas.getContext('2d').drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, 0, 0, size, size);
+                    profileDraft.avatar = canvas.toDataURL('image/jpeg', 0.85);
+                    errorBox.innerText = '';
+                    renderAvatarGrid();
+                };
+                img.onerror = () => { errorBox.innerText = 'No se pudo leer esa imagen.'; };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        function openAddProfileModal() {
+            appState.editingProfileIndex = null;
+            document.getElementById('profile-modal-title').innerText = 'Añadir nuevo perfil';
+            document.getElementById('edit-profile-name').value = '';
+            document.getElementById('profile-error').innerText = '';
+            document.getElementById('btn-delete-profile').style.display = 'none';
+            profileDraft.avatar = AVATAR_OPTIONS[appState.profiles.length % AVATAR_OPTIONS.length].src;
+            renderAvatarGrid();
+            document.getElementById('modal-profile').style.display = 'flex';
+        }
+
+        function openProfileEditModal(index) {
+            const profile = appState.profiles[index];
+            if (!profile) return;
+            appState.editingProfileIndex = index;
+            document.getElementById('profile-modal-title').innerText = 'Editar perfil';
+            document.getElementById('edit-profile-name').value = profile.name;
+            document.getElementById('profile-error').innerText = '';
+            document.getElementById('btn-delete-profile').style.display = appState.profiles.length > 1 ? 'block' : 'none';
+            profileDraft.avatar = profile.avatar;
+            renderAvatarGrid();
+            document.getElementById('modal-profile').style.display = 'flex';
+        }
+
+        function handleSaveProfile(e) {
+            e.preventDefault();
+            const newName = document.getElementById('edit-profile-name').value.trim();
+            const errorBox = document.getElementById('profile-error');
+            if (!newName) {
+                errorBox.innerText = 'Escribe un nombre para el perfil.';
+                return;
+            }
+
+            if (appState.editingProfileIndex !== null) {
+                const profile = appState.profiles[appState.editingProfileIndex];
+                profile.name = newName;
+                profile.avatar = profileDraft.avatar;
+                if (appState.currentUser === profile) {
+                    document.getElementById('nav-user-avatar').src = profile.avatar;
+                }
+            } else {
+                if (appState.profiles.length >= 5) {
+                    errorBox.innerText = 'Solo puedes tener hasta 5 perfiles.';
+                    return;
+                }
+                appState.profiles.push({
+                    id: Date.now(),
+                    name: newName,
+                    avatar: profileDraft.avatar,
+                    library: [],
+                    customBooks: [],
+                    coverOverrides: {}
+                });
+            }
+
+            saveUserData();
+            closeModal('modal-profile');
+            renderProfilesScreen();
+        }
+
+        function deleteProfile() {
+            const idx = appState.editingProfileIndex;
+            if (idx === null || appState.profiles.length <= 1) return;
+            const profile = appState.profiles[idx];
+            if (!confirm(`¿Eliminar el perfil "${profile.name}"? Se borrará también su biblioteca.`)) return;
+
+            const wasCurrent = appState.currentUser === profile;
+            appState.profiles.splice(idx, 1);
+            if (!wasCurrent && appState.selectedProfileIndex !== null && idx < appState.selectedProfileIndex) {
+                appState.selectedProfileIndex--;
+            }
+            saveUserData();
+            closeModal('modal-profile');
+            if (wasCurrent) {
+                switchProfile();
+            } else {
+                renderProfilesScreen();
+            }
+        }
+
+        function showHomeScreen() {
+            document.getElementById('screen-category-view').style.display = 'none';
+            document.getElementById('screen-my-library').style.display = 'none';
+            document.getElementById('main-content-area').style.display = 'block';
+            renderCategories();
+            window.scrollTo(0, 0);
+        }
+
+        function openMyLibrary() {
+            document.getElementById('main-content-area').style.display = 'none';
+            document.getElementById('screen-category-view').style.display = 'none';
+            document.getElementById('screen-my-library').style.display = 'block';
+
+            const container = document.getElementById('my-library-grid-container');
+            container.innerHTML = '';
+
+            if (appState.myLibrary.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1;" class="empty-library">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Tu biblioteca personal está vacía</h3>
+                        <p>Explora el catálogo principal y adquiere tus libros favoritos para verlos aquí.</p>
+                    </div>
+                `;
+            } else {
+                appState.myLibrary.forEach(item => {
+                    const b = booksData.find(book => book.id === Number(item.id));
+                    if (b) {
+                        const statusText = item.type === 'buy' ? 'Comprado' : 'Alquilado (Activo)';
+                        const statusColor = item.type === 'buy' ? '#46d369' : '#e50914';
+                        container.innerHTML += `
+                            <div class="book-card" onclick="openDetailModal(${b.id})">
+                                <div class="book-card-img-container">
+                                    <img data-book="${b.id}" src="${coverSrc(b)}" alt="${b.title}" onerror="coverFailed(this)">
+                                </div>
+                                <div class="book-card-details">
+                                    <div class="book-card-title">${b.title}</div>
+                                    <div class="book-card-author">${b.author}</div>
+                                    <div class="book-card-price" style="color: ${statusColor};">${statusText}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function renderCategories(filter = '') {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = '';
+
+            const categories = [
+                'Novela Latinoamericana',
+                'Clásicos Universales',
+                'Ciencia Ficción y Fantasía',
+                'Poesía y Teatro',
+                'Ensayo y Narrativa'
+            ];
+
+            categories.forEach((cat, index) => {
+                const filteredBooks = booksData.filter(b =>
+                    b.category === cat &&
+                    (b.title.toLowerCase().includes(filter.toLowerCase()) ||
+                     b.author.toLowerCase().includes(filter.toLowerCase()))
+                );
+
+                if (filteredBooks.length > 0) {
+                    const row = document.createElement('div');
+                    row.className = 'category-row';
+                    row.id = `cat-${index}`;
+
+                    row.innerHTML = `
+                        <div class="category-title-header" onclick="openCategoryView('${cat}')">
+                            ${cat} <i class="fas fa-chevron-right" style="font-size:0.9rem;"></i>
+                        </div>
+                        <div class="books-carousel">
+                            ${filteredBooks.map(b => `
+                                <div class="book-card" onclick="openDetailModal(${b.id})">
+                                    <div class="book-card-img-container">
+                                        <img data-book="${b.id}" src="${coverSrc(b)}" alt="${b.title}" onerror="coverFailed(this)">
+                                    </div>
+                                    <div class="book-card-details">
+                                        <div class="book-card-title">${b.title}</div>
+                                        <div class="book-card-author">${b.author}</div>
+                                        <div class="book-card-price">$${b.priceBuy.toFixed(2)}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    container.appendChild(row);
+                }
+            });
+        }
+
+        function openCategoryView(categoryName) {
+            document.getElementById('main-content-area').style.display = 'none';
+            document.getElementById('screen-my-library').style.display = 'none';
+            document.getElementById('screen-category-view').style.display = 'block';
+            document.getElementById('cat-view-title').innerText = categoryName;
+
+            const gridContainer = document.getElementById('category-grid-container');
+            gridContainer.innerHTML = '';
+
+            const booksInCat = booksData.filter(b => b.category === categoryName);
+
+            booksInCat.forEach(b => {
+                gridContainer.innerHTML += `
+                    <div class="book-card" onclick="openDetailModal(${b.id})">
+                        <div class="book-card-img-container">
+                            <img data-book="${b.id}" src="${coverSrc(b)}" alt="${b.title}" onerror="coverFailed(this)">
+                        </div>
+                        <div class="book-card-details">
+                            <div class="book-card-title">${b.title}</div>
+                            <div class="book-card-author">${b.author}</div>
+                            <div class="book-card-price">$${b.priceBuy.toFixed(2)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            window.scrollTo(0, 0);
+        }
+
+        function openDetailModal(id) {
+            selectedBookId = Number(id);
+            const book = booksData.find(b => b.id === selectedBookId);
+            if (!book) return;
+
+            document.getElementById('modal-img').style.backgroundImage = `url('${coverSrc(book)}')`;
+            document.getElementById('modal-title').innerText = book.title;
+            document.getElementById('modal-subtitle').innerText = `${book.author} | Editorial: ${book.editorial}`;
+            document.getElementById('modal-synopsis').innerText = book.synopsis;
+            
+
+            const libraryItem = appState.myLibrary.find(item => Number(item.id) === selectedBookId);
+            const actionsContainer = document.getElementById('modal-store-actions');
+            // En "Mi Biblioteca" (comprado o alquilado) NO se muestra la opción de URL de portada
+            
+
+            if (!libraryItem) {
+                // NO está en la biblioteca: mostrar botones de compra y alquiler
+                actionsContainer.innerHTML = `
+                    <button class="btn-buy" onclick="buyBook()"><i class="fas fa-shopping-cart"></i> Comprar - $${book.priceBuy.toFixed(2)}</button>
+                    <button class="btn-rent" onclick="rentBook()"><i class="fas fa-book-reader"></i> Alquilar (30 días) - $${book.priceRent.toFixed(2)}</button>
+                `;
+            } else if (libraryItem.type === 'buy') {
+                // ESTÁ COMPRADO: CERO botones de tienda, solo texto informativo
+                actionsContainer.innerHTML = `
+                    <div style="color: #46d369; font-weight: bold; font-size: 1.05rem; padding: 10px 0; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-check-circle"></i> Título adquirido permanentemente. Ya está disponible en tu biblioteca.
+                    </div>
+                    ${readBtn(book)}
+                `;
+            } else if (libraryItem.type === 'rent') {
+                // ESTÁ ALQUILADO: Solo botón de devolución
+                actionsContainer.innerHTML = `
+                    <div style="width:100%; color: #e50914; font-weight: bold; font-size: 1.0rem; padding: 5px 0; margin-bottom: 5px;">
+                        <i class="fas fa-clock"></i> Alquilado por 30 días.
+                    </div>
+                    <button class="btn-return" onclick="returnBook()"><i class="fas fa-undo"></i> Devolver Libro</button>
+                    ${readBtn(book)}
+                `;
+            }
+
+            document.getElementById('modal-detail').style.display = 'flex';
+        }
+
+        function saveNewCover() {
+            const newUrl = document.getElementById('modal-cover-url').value.trim();
+            if (!selectedBookId || !newUrl) return;
+            const book = booksData.find(b => b.id === selectedBookId);
+            if (!book) return;
+
+            if (book.custom) {
+                book.cover = newUrl;
+            } else if (appState.currentUser) {
+                // La portada personalizada solo la ve este perfil
+                appState.currentUser.coverOverrides = appState.currentUser.coverOverrides || {};
+                appState.currentUser.coverOverrides[book.id] = newUrl;
+            }
+            document.getElementById('modal-img').style.backgroundImage = `url('${coverSrc(book)}')`;
+            saveBooksToStorage();
+            renderCategories();
+            refreshCurrentView();
+            closeModal('modal-detail');
+        }
+
+        // Al comprar o alquilar, el libro vuelve a su portada original
+        function resetCoverToOriginal(book) {
+            if (book.custom) {
+                if (book.originalCover) book.cover = book.originalCover;
+            } else if (appState.currentUser && appState.currentUser.coverOverrides) {
+                delete appState.currentUser.coverOverrides[book.id];
+            }
+            saveBooksToStorage();
+        }
+
+        // Ampliar la portada
+        function openCoverLightbox() {
+            const book = booksData.find(b => b.id === selectedBookId);
+            if (!book) return;
+            const img = document.getElementById('lightbox-img');
+            const normal = coverSrc(book);
+            const big = normal.replace(/zoom=\d/, 'zoom=3');
+            img.onerror = () => { img.onerror = null; img.src = normal; };
+            img.src = big;
+            document.getElementById('modal-lightbox').style.display = 'flex';
+        }
+
+        // Refresca la vista que esté abierta (Mi Biblioteca o categoría) para que se vean los cambios
+        function refreshCurrentView() {
+            if (document.getElementById('screen-my-library').style.display === 'block') {
+                openMyLibrary();
+            }
+        }
+
+        // Muestra el mensaje en el CENTRO de la pantalla (tiene X para cerrar)
+        function showCenterMessage(iconClass, title, htmlText) {
+            document.getElementById('center-msg-icon').className = iconClass + ' main-icon';
+            document.getElementById('center-msg-title').innerText = title;
+            document.getElementById('center-msg-text').innerHTML = htmlText;
+            document.getElementById('modal-center-message').style.display = 'flex';
+        }
+
+        function getUserName() {
+            return appState.currentUser ? appState.currentUser.name : 'lector';
+        }
+
+        // COMPRAR LIBRO
+        function buyBook() {
+            const book = booksData.find(b => b.id === selectedBookId);
+
+            resetCoverToOriginal(book);
+
+            const existing = appState.myLibrary.find(item => Number(item.id) === selectedBookId);
+            if (!existing) {
+                appState.myLibrary.push({ id: selectedBookId, type: 'buy' });
+            } else {
+                existing.type = 'buy';
+            }
+            saveLibraryToStorage();
+            closeModal('modal-detail');
+            refreshCurrentView();
+
+            logActivity('buy', book.title);
+            showCenterMessage(
+                'fas fa-award',
+                '¡Felicidades!',
+                `¡Felicidades ${getUserName()}! Has comprado exitosamente <b>"${book.title}"</b>. Ya está disponible en "Mi Biblioteca".`
+            );
+        }
+
+        // ALQUILAR LIBRO
+        function rentBook() {
+            const book = booksData.find(b => b.id === selectedBookId);
+
+            resetCoverToOriginal(book);
+
+            const existing = appState.myLibrary.find(item => Number(item.id) === selectedBookId);
+            if (!existing) {
+                appState.myLibrary.push({ id: selectedBookId, type: 'rent' });
+            }
+            saveLibraryToStorage();
+            closeModal('modal-detail');
+            refreshCurrentView();
+
+            logActivity('rent', book.title);
+            showCenterMessage(
+                'fas fa-book-reader',
+                '¡Felicitaciones!',
+                `¡Felicidades ${getUserName()}! Has alquilado <b>"${book.title}"</b> por 30 días. ¡Disfruta tu lectura!`
+            );
+        }
+
+        // DEVOLVER LIBRO
+        function returnBook() {
+            const book = booksData.find(b => b.id === selectedBookId);
+            appState.myLibrary = appState.myLibrary.filter(item => Number(item.id) !== selectedBookId);
+            saveLibraryToStorage();
+            closeModal('modal-detail');
+            refreshCurrentView();
+
+            logActivity('return', book.title);
+            showCenterMessage(
+                'fas fa-undo',
+                'Libro Devuelto',
+                `Has devuelto <b>"${book.title}"</b> correctamente. Esperamos que hayas disfrutado mucho la lectura.`
+            );
+        }
+
+        
+
+
+        // ===== BÚSQUEDA AUTOMÁTICA DE PORTADAS (Google Books) =====
+        const coverAttempted = new Set();
+
+        async function fetchCover(book) {
+            if (!book || coverAttempted.has(book.id)) return;
+            coverAttempted.add(book.id);
+            try {
+                const q = `intitle:${book.title}+inauthor:${book.author}`;
+                const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q).replace(/%2B/g, '+')}&langRestrict=es&maxResults=5`);
+                const data = await res.json();
+                const item = (data.items || []).find(i => i.volumeInfo && i.volumeInfo.imageLinks);
+                if (!item) return;
+                const links = item.volumeInfo.imageLinks;
+                let url = (links.thumbnail || links.smallThumbnail || '').replace('http://', 'https://').replace('&edge=curl', '');
+                if (!url) return;
+                book.cover = url;
+                book.originalCover = url;
+                saveBooksToStorage();
+                document.querySelectorAll(`img[data-book="${book.id}"]`).forEach(img => { img.src = coverSrc(book); });
+                if (selectedBookId === book.id) {
+                    document.getElementById('modal-img').style.backgroundImage = `url('${url}')`;
+                }
+            } catch (err) {
+                console.warn('No se pudo buscar la portada de', book.title, err);
+            }
+        }
+
+        // Si una imagen falla, se muestra un recuadro y se busca otra portada
+        function coverFailed(img) {
+            img.onerror = null;
+            img.src = COVER_PLACEHOLDER;
+            const id = Number(img.dataset.book);
+            const user = appState.currentUser;
+            // Si la que falló fue una portada personalizada del perfil, solo se quita esa
+            if (user && user.coverOverrides && user.coverOverrides[id]) {
+                delete user.coverOverrides[id];
+                saveUserData();
+                const b = booksData.find(x => x.id === id);
+                if (b) img.src = coverSrc(b);
+                return;
+            }
+            const book = booksData.find(b => b.id === id);
+            if (book) {
+                book.cover = '';
+                book.originalCover = '';
+                fetchCover(book);
+            }
+        }
+
+        // Al abrir la página, busca las portadas de los libros que aún no tienen
+        (async function loadMissingCovers() {
+            for (const b of booksData) {
+                if (!b.cover) await fetchCover(b);
+            }
+        })();
+
+
+        // ===== ROLES: ADMINISTRADOR / LECTOR =====
+        const ADMIN_CODE = 'BIBLIOFLIX-ADMIN'; // <-- cámbialo por tu propio código secreto
+        const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        function persistCatalog() {
+            try { localStorage.setItem(BOOKS_KEY, JSON.stringify(baseBooks)); }
+            catch (e) { alert('No hay espacio para guardar. Usa portadas por URL o imágenes más pequeñas.'); }
+        }
+
+        // PDFs: se guardan en IndexedDB (soporta archivos grandes)
+        const idb = () => new Promise((ok, no) => { const r = indexedDB.open('biblioflix_files', 1); r.onupgradeneeded = () => r.result.createObjectStore('pdfs'); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
+        const pdfPut = async (id, blob) => { const d = await idb(); return new Promise((ok, no) => { const t = d.transaction('pdfs', 'readwrite'); t.objectStore('pdfs').put(blob, id); t.oncomplete = ok; t.onerror = () => no(t.error); }); };
+        const pdfGet = async id => { const d = await idb(); return new Promise((ok, no) => { const q = d.transaction('pdfs').objectStore('pdfs').get(id); q.onsuccess = () => ok(q.result); q.onerror = () => no(q.error); }); };
+        const pdfDel = async id => { const d = await idb(); return new Promise(ok => { const t = d.transaction('pdfs', 'readwrite'); t.objectStore('pdfs').delete(id); t.oncomplete = ok; }); };
+
+        // Lector: leer el PDF de un libro comprado/alquilado
+        const readBtn = b => b.hasPdf
+            ? `<button class="btn-buy" onclick="readBook()"><i class="fas fa-book-open"></i> Leer ahora</button>`
+            : `<div style="color:#aaa;width:100%;">📄 El PDF de este libro aún no está disponible.</div>`;
+
+        async function readBook() {
+            if (sb) {
+                const url = sb.storage.from('pdfs').getPublicUrl(selectedBookId + '.pdf').data.publicUrl;
+                document.getElementById('reader-open').href = url;
+                document.getElementById('reader-frame').src = url;
+                document.getElementById('modal-reader').style.display = 'flex';
+                return;
+            }
+            const blob = await pdfGet(selectedBookId).catch(() => null);
+            if (!blob) { alert('El administrador aún no ha subido el PDF de este libro.'); return; }
+            document.getElementById('reader-frame').src = URL.createObjectURL(blob);
+            document.getElementById('modal-reader').style.display = 'flex';
+        }
+
+        // Administrador
+        function logActivity(type, title) {
+            if (sb) {
+                const u = getUsers()[currentEmail] || {};
+                sb.from('activity').insert({ name: u.name || '', email: currentEmail, type, book: title || '' }).then(() => {});
+                return;
+            }
+            try {
+                const u = getUsers()[currentEmail] || {};
+                const a = JSON.parse(localStorage.getItem('biblioflix_activity') || '[]');
+                a.unshift({ t: Date.now(), type, name: u.name || '', email: currentEmail, book: title || '' });
+                localStorage.setItem('biblioflix_activity', JSON.stringify(a.slice(0, 300)));
+            } catch (e) {}
+        }
+
+        function renderAdminExtra() {
+            const users = Object.values(getUsers());
+            const fmt = t => t ? new Date(t).toLocaleString('es') : '—';
+            document.getElementById('admin-users').innerHTML = users.map(u => {
+                let b = 0, r = 0;
+                (u.profiles || []).forEach(p => (p.library || []).forEach(i => i.type === 'buy' ? b++ : r++));
+                return `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${u.role === 'admin' ? 'Administrador' : u.role === 'pending_admin' ? 'Solicitud pendiente' : 'Lector'}</td><td>${fmt(u.createdAt)}</td><td>${b}</td><td>${r}</td></tr>`;
+            }).join('') || '<tr><td colspan="6">Aún no hay usuarios.</td></tr>';
+            const pend = users.filter(u => u.role === 'pending_admin');
+            document.getElementById('admin-requests').innerHTML = (sb && pend.length) ? `<h2 style="margin:35px 0 12px;">Solicitudes para ser administrador</h2>` + pend.map(u =>
+                `<div class="stat-card" style="cursor:default;margin-bottom:8px;padding:12px 16px;"><b style="font-size:1rem;color:#fff;">${esc(u.name)} <small style="color:#aaa;font-weight:400;">(${esc(u.email)})</small></b><button class="admin-btn" onclick="setAdminRole('${u.id}','admin')">Aprobar</button><button class="admin-btn" onclick="setAdminRole('${u.id}','user')">Rechazar</button></div>`).join('') : '';
+            const verbs = { admin_request: 'solicitó ser administrador', register: 'creó una cuenta', buy: 'compró', rent: 'alquiló', return: 'devolvió' };
+            let act = activityCache; if (!sb) { try { act = JSON.parse(localStorage.getItem('biblioflix_activity') || '[]'); } catch (e) {} }
+            document.getElementById('admin-activity').innerHTML = act.map(a =>
+                `<div class="stat-card" style="margin-bottom:8px;padding:12px 16px;"><b style="font-size:1rem;color:#fff;">${esc(a.name)} <small style="color:#aaa;font-weight:400;">(${esc(a.email)})</small> ${verbs[a.type] || ''}${a.book ? ' "' + esc(a.book) + '"' : ''}</b><span>${fmt(a.t)}</span></div>`
+            ).join('') || '<div style="color:#aaa;">Todavía no hay actividad.</div>';
+        }
+
+        function showStat(k) {
+            const rows = [];
+            const users = Object.values(getUsers());
+            users.forEach(u => (u.profiles || []).forEach(p => (p.library || []).forEach(i => {
+                const b = baseBooks.find(x => x.id === Number(i.id)); if (b) rows.push({ u, b, type: i.type });
+            })));
+            const price = r => r.type === 'buy' ? r.b.priceBuy : r.b.priceRent;
+            const money = n => '$' + n.toFixed(2);
+            const table = (h, r) => `<div style="overflow-x:auto;"><table class="admin-table"><thead><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr></thead><tbody>${r.map(x => `<tr>${x.map(c => `<td>${c}</td>`).join('')}</tr>`).join('') || '<tr><td colspan="9">Todavía no hay datos.</td></tr>'}</tbody></table></div>`;
+            const bookRows = list => list.map(b => [esc(b.title), esc(b.author), esc(b.category)]);
+            const sold = t => rows.filter(r => r.type === t).map(r => [esc(r.b.title), esc(r.u.name), esc(r.u.email), money(price(r))]);
+            let title, html;
+            if (k === 'books') { title = 'Libros en catálogo'; html = table(['Título', 'Autor', 'Categoría'], bookRows(baseBooks)); }
+            else if (k === 'pdf') { title = 'Libros con PDF subido'; html = table(['Título', 'Autor', 'Categoría'], bookRows(baseBooks.filter(b => b.hasPdf))); }
+            else if (k === 'readers') { title = 'Lectores registrados'; html = table(['Nombre', 'Correo electrónico'], users.filter(u => u.role !== 'admin').map(u => [esc(u.name), esc(u.email)])); }
+            else if (k === 'buys') { title = 'Libros comprados'; html = table(['Libro', 'Lector', 'Correo', 'Pagó'], sold('buy')); }
+            else if (k === 'rents') { title = 'Libros alquilados'; html = table(['Libro', 'Lector', 'Correo', 'Pagó'], sold('rent')); }
+            else {
+                title = 'Ingresos: ' + money(rows.reduce((a, r) => a + price(r), 0));
+                html = table(['Libro', 'Tipo', 'Lector', 'Correo', 'Monto'], rows.map(r => [esc(r.b.title), r.type === 'buy' ? 'Compra' : 'Alquiler', esc(r.u.name), esc(r.u.email), money(price(r))]));
+            }
+            document.getElementById('stat-title').innerText = title;
+            document.getElementById('stat-body').innerHTML = html;
+            document.getElementById('modal-stat').style.display = 'flex';
+        }
+
+        function showAdmin() {
+            ['screen-profiles', 'screen-app'].forEach(i => document.getElementById(i).style.display = 'none');
+            document.getElementById('screen-admin').style.display = 'block';
+            renderAdmin();
+            renderAdminExtra();
+        }
+
+        function renderAdmin() {
+            const users = Object.values(getUsers());
+            const cnt = {}; let buys = 0, rents = 0, money = 0;
+            users.forEach(u => (u.profiles || []).forEach(p => (p.library || []).forEach(i => {
+                const b = baseBooks.find(x => x.id === Number(i.id)); if (!b) return;
+                cnt[b.id] = cnt[b.id] || { b: 0, r: 0 };
+                if (i.type === 'buy') { buys++; money += b.priceBuy; cnt[b.id].b++; } else { rents++; money += b.priceRent; cnt[b.id].r++; }
+            })));
+            const card = (n, t, k) => `<div class="stat-card" onclick="showStat('${k}')"><b>${n}</b><span>${t} ›</span></div>`;
+            document.getElementById('admin-stats').innerHTML =
+                card(baseBooks.length, 'Libros en catálogo', 'books') + card(baseBooks.filter(b => b.hasPdf).length, 'Con PDF subido', 'pdf') +
+                card(users.filter(u => u.role !== 'admin').length, 'Lectores registrados', 'readers') + card(buys, 'Compras', 'buys') +
+                card(rents, 'Alquileres', 'rents') + card('$' + money.toFixed(2), 'Ingresos', 'money');
+            document.getElementById('admin-tbody').innerHTML = baseBooks.map(b => `<tr>
+                <td><img src="${esc(coverSrc(b))}" alt=""></td><td><b>${esc(b.title)}</b><br><small style="color:#aaa">${esc(b.author)}</small></td>
+                <td>${esc(b.category)}</td><td>$${b.priceBuy.toFixed(2)}</td><td>$${b.priceRent.toFixed(2)}</td>
+                <td>${b.hasPdf ? '✅' : '—'}</td><td>${(cnt[b.id] || { b: 0 }).b} / ${(cnt[b.id] || { r: 0 }).r}</td>
+                <td><button class="admin-btn" onclick="openAdminBook(${b.id})"><i class="fas fa-pen"></i></button><button class="admin-btn" onclick="deleteAdminBook(${b.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+        }
+
+        let editingBookId = null;
+        function openAdminBook(id) {
+            const b = id ? baseBooks.find(x => x.id === id) : null;
+            editingBookId = b ? b.id : null;
+            document.getElementById('ab-heading').innerText = b ? 'Editar libro' : 'Nuevo libro';
+            document.getElementById('ab-title').value = b ? b.title : '';
+            document.getElementById('ab-author').value = b ? b.author : '';
+            document.getElementById('ab-editorial').value = b ? b.editorial : '';
+            document.getElementById('ab-category').value = b ? b.category : 'Novela Latinoamericana';
+            document.getElementById('ab-buy').value = b ? b.priceBuy : '15.99';
+            document.getElementById('ab-rent').value = b ? b.priceRent : '4.99';
+            document.getElementById('ab-synopsis').value = b ? b.synopsis : '';
+            document.getElementById('ab-cover-url').value = b && !b.cover.startsWith('data:') ? b.cover : '';
+            document.getElementById('ab-cover-file').value = '';
+            document.getElementById('ab-pdf').value = '';
+            document.getElementById('ab-error').innerText = '';
+            document.getElementById('modal-admin-book').style.display = 'flex';
+        }
+
+        const imgToData = f => new Promise((ok, no) => {
+            const r = new FileReader();
+            r.onload = () => { const i = new Image(); i.onload = () => { const w = 360, h = Math.round(w * i.height / i.width), c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(i, 0, 0, w, h); ok(c.toDataURL('image/jpeg', 0.8)); }; i.onerror = no; i.src = r.result; };
+            r.onerror = no; r.readAsDataURL(f);
+        });
+
+        async function saveAdminBook(e) {
+            e.preventDefault();
+            const err = document.getElementById('ab-error');
+            const old = editingBookId ? baseBooks.find(x => x.id === editingBookId) : null;
+            let cover = document.getElementById('ab-cover-url').value.trim();
+            const coverFile = document.getElementById('ab-cover-file').files[0];
+            const pdf = document.getElementById('ab-pdf').files[0];
+            try {
+                if (coverFile) cover = await imgToData(coverFile);
+                if (!cover && old) cover = old.cover;
+                if (!cover) { err.innerText = 'Agrega una portada (URL o imagen).'; return; }
+                const id = old ? old.id : Math.max(100, ...baseBooks.map(b => b.id)) + 1;
+                if (pdf) { if (sb) { const r = await sb.storage.from('pdfs').upload(id + '.pdf', pdf, { upsert: true, contentType: 'application/pdf' }); if (r.error) throw r.error.message; } else await pdfPut(id, pdf); }
+                const book = {
+                    id, title: document.getElementById('ab-title').value.trim(), author: document.getElementById('ab-author').value.trim(),
+                    editorial: document.getElementById('ab-editorial').value.trim(), category: document.getElementById('ab-category').value,
+                    priceBuy: parseFloat(document.getElementById('ab-buy').value), priceRent: parseFloat(document.getElementById('ab-rent').value),
+                    synopsis: document.getElementById('ab-synopsis').value.trim(), cover, originalCover: cover, hasPdf: !!pdf || !!(old && old.hasPdf)
+                };
+                if (old) baseBooks[baseBooks.indexOf(old)] = book; else baseBooks.unshift(book);
+                persistCatalog();
+                if (sb) { const r = await sb.from('books').upsert({ id: book.id, data: book }); if (r.error) throw r.error.message; }
+                closeModal('modal-admin-book');
+                renderAdmin();
+            } catch (ex) { err.innerText = 'No se pudo guardar: ' + ex; }
+        }
+
+        async function deleteAdminBook(id) {
+            const b = baseBooks.find(x => x.id === id);
+            if (!b || !confirm(`¿Eliminar "${b.title}" del catálogo?`)) return;
+            baseBooks = baseBooks.filter(x => x.id !== id);
+            await pdfDel(id);
+            if (sb) { await sb.from('books').delete().eq('id', id); await sb.storage.from('pdfs').remove([id + '.pdf']); }
+            persistCatalog();
+            renderAdmin();
+        }
+
+        function filterBooks() {
+            const query = document.getElementById('search-input').value;
+            showHomeScreen();
+            renderCategories(query);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+            if (id === 'modal-reader') document.getElementById('reader-frame').src = 'about:blank';
+        }
+
+        // Cerrar el mensaje central haciendo clic afuera o con la tecla Esc
+        document.getElementById('modal-center-message').addEventListener('click', (e) => {
+            if (e.target.id === 'modal-center-message') closeModal('modal-center-message');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { closeModal('modal-lightbox'); closeModal('modal-center-message'); }
+        });
+
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        if (sb) {
+            document.getElementById('reg-role').onchange = null;
+            document.getElementById('reg-role').options[1].text = 'Solicitar ser administrador (requiere aprobación)';
+        }
+
+        // Botón "ojo" para ver/ocultar contraseñas y el código de administrador
+        document.querySelectorAll('input[type=password]').forEach(i => {
+            const g = i.parentElement; g.style.position = 'relative'; i.style.paddingRight = '48px';
+            const b = document.createElement('button'); b.type = 'button'; b.innerHTML = '<i class="fas fa-eye"></i>';
+            b.style.cssText = 'position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:1rem';
+            b.onclick = () => { const h = i.type === 'password'; i.type = h ? 'text' : 'password'; b.firstChild.className = 'fas fa-eye' + (h ? '-slash' : ''); };
+            g.appendChild(b);
+        });
+
+        // Mantener la sesión al refrescar: solo se cierra con el botón "Salir"
+        (function restoreSession() {
+            if (sb) {
+                sb.auth.getSession().then(async ({ data }) => {
+                    if (!data.session) return;
+                    const p = localStorage.getItem('biblioflix_profile');
+                    if (await enterSession() && p !== null && appState.profiles[Number(p)]) selectProfile(Number(p));
+                });
+                setInterval(() => {
+                    const busy = ['modal-admin-book', 'modal-stat'].some(i => document.getElementById(i).style.display === 'flex');
+                    if (authId && !busy && document.getElementById('screen-admin').style.display === 'block') refreshAdmin();
+                }, 20000);
+                return;
+            }
+            const email = localStorage.getItem('biblioflix_session');
+            if (!email || !getUsers()[email]) return;
+            const p = localStorage.getItem('biblioflix_profile');
+            startSession(email);
+            if (p !== null && appState.profiles[Number(p)]) selectProfile(Number(p));
+        })();
+    </script>
+</body>
+</html>
