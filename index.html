@@ -887,6 +887,221 @@
         .file-label{display:block;color:var(--text-gray);font-size:.8rem;margin-bottom:4px}
         #modal-reader .modal-content{max-width:1000px;height:92vh}
         #reader-frame{flex:1;width:100%;border:0;background:#fff;border-radius:8px}
+    
+    
+    /* ===================================================================
+   RESPONSIVE MÓVIL - BiblioFlix
+   =================================================================== */
+@media (max-width: 900px) {
+
+    /* ---------- NAVBAR: 2 filas, enlaces con scroll horizontal ---------- */
+    .navbar {
+        padding: 10px 16px;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .nav-left {
+        flex: 1 1 100%;
+        gap: 12px;
+        margin-bottom: 4px;
+    }
+    .brand-logo {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+        flex-shrink: 0;
+    }
+    .nav-links {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 14px;
+        flex: 1;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a { white-space: nowrap; font-size: 0.82rem; }
+
+    .nav-right {
+        flex: 1 1 100%;
+        gap: 6px;
+    }
+    .search-box { flex: 1 1 auto; min-width: 0; }
+    .search-box input {
+        width: 100%;
+        font-size: 1rem;              /* evita el zoom automático en iOS */
+        padding: 8px 10px 8px 32px;
+    }
+    .search-box i { left: 8px; font-size: 0.85rem; }
+
+    /* Botones de perfil/salir: solo icono para ganar espacio */
+    .btn-logout {
+        padding: 0;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0;                 /* oculta el texto pero conserva el icono */
+        flex-shrink: 0;
+    }
+    .btn-logout i { font-size: 1rem; }
+
+    .current-user-avatar { width: 38px; height: 38px; flex-shrink: 0; }
+
+    /* Ocultar el ojo duplicado de los inputs (el botón inyectado por JS ya cumple esa función) */
+    .toggle-password { display: none; }
+
+    /* ---------- HERO ---------- */
+    .hero {
+        height: auto;
+        min-height: 55vh;
+        padding: 110px 20px 40px;
+    }
+    .hero-tag { font-size: 0.72rem; letter-spacing: 1.5px; }
+    .hero-title { font-size: 1.8rem; line-height: 1.15; margin-bottom: 10px; }
+    .hero-desc { font-size: 0.92rem; margin-bottom: 18px; }
+    .btn-hero { padding: 10px 18px; font-size: 0.92rem; }
+
+    /* ---------- CATEGORÍAS Y CARRUSELES ---------- */
+    .content-sections { margin-top: -30px; }
+    .category-row { padding: 0 16px; margin-bottom: 22px; }
+    .category-title-header { font-size: 1.1rem; }
+
+    .book-card { min-width: 140px; width: 140px; }
+    .book-card:hover { transform: none; box-shadow: none; } /* desactivar hover pegajoso en táctil */
+    .book-card-img-container { width: 140px; height: 185px; }
+    .catalog-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    /* ---------- VISTAS (categoría, mi biblioteca) ---------- */
+    .page-view { padding: 125px 16px 40px; }
+    .page-view h1 { font-size: 1.7rem !important; } /* vence el inline style */
+
+    .my-library-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        padding: 20px;
+    }
+    .my-library-banner i { font-size: 2.4rem; }
+    .my-library-banner h1 { font-size: 1.4rem !important; }
+    .my-library-banner p { font-size: 0.9rem; }
+
+    .empty-library { padding: 40px 16px; }
+    .empty-library i { font-size: 3rem; }
+    .empty-library h3 { font-size: 1.05rem; }
+
+    /* ---------- LOGIN / REGISTRO ---------- */
+    #screen-register {
+        padding: 24px 16px;
+        justify-content: flex-start;
+    }
+    .login-header {
+        position: static;
+        margin-bottom: 22px;
+    }
+    .login-header .brand-logo { font-size: 1.8rem; }
+    .login-box { padding: 28px 22px; max-width: 420px; }
+    .login-box h2 { font-size: 1.45rem; margin-bottom: 18px; }
+
+    /* ---------- SELECCIÓN DE PERFILES ---------- */
+    #screen-profiles {
+        justify-content: safe center;    /* no corta el contenido si sobra */
+        padding: 30px 16px;
+    }
+    .profiles-title { font-size: 1.7rem; margin-bottom: 25px; }
+    .profiles-container { gap: 16px; }
+    .profile-card { width: 118px; }
+    .profile-card:hover { transform: none; }
+    .profile-avatar { width: 108px; height: 108px; }
+    .profile-edit-badge { opacity: 1; }  /* siempre visible en táctil */
+    .add-profile-btn { width: 108px; height: 108px; }
+    .add-profile-btn i { font-size: 2.2rem; }
+    .profile-name { font-size: 0.95rem; margin-top: 10px; }
+
+    /* ---------- PANEL ADMINISTRADOR ---------- */
+    #screen-admin { padding: 125px 16px 40px; }
+    #screen-admin > h1 { font-size: 1.6rem; }
+    .admin-tag { font-size: 0.6rem; padding: 2px 6px; }
+    .admin-stats {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+        margin: 18px 0;
+    }
+    .stat-card { padding: 14px; }
+    .stat-card b { font-size: 1.35rem; }
+    .admin-table th, .admin-table td { padding: 7px 8px; font-size: 0.78rem; }
+    .admin-table img { width: 32px; height: 42px; }
+
+    /* ---------- MODALES ---------- */
+    .modal-content { width: 95%; max-height: 95vh; }
+    .modal-body { padding: 20px; }
+    .modal-title { font-size: 1.4rem; }
+    .modal-subtitle { font-size: 0.88rem; }
+    .modal-synopsis { font-size: 0.88rem; }
+    .modal-header-img { height: 42vh; }
+
+    .modal-center-card { padding: 28px 20px; }
+    .modal-center-card h3 { font-size: 1.35rem; }
+    .modal-center-card p { font-size: 0.92rem; }
+    .modal-center-card i.main-icon { font-size: 2.6rem; margin-bottom: 15px; }
+
+    /* Formulario admin: 1 columna */
+    .form-grid { grid-template-columns: 1fr; gap: 12px; }
+    .form-grid .full-width { grid-column: span 1; }
+
+    /* Editor de perfil */
+    .avatar-grid { gap: 8px; }
+    .avatar-option img { max-width: 70px; }
+    .avatar-option span { font-size: 0.72rem; }
+    .profile-preview { width: 105px; height: 105px; }
+    .profile-editor-input { padding: 12px; font-size: 1rem; }
+
+    /* Botones de tienda apilados */
+    .store-actions { flex-direction: column; }
+    .store-actions button { width: 100%; }
+}
+
+/* ---------- AJUSTES FINOS PARA CELULARES PEQUEÑOS ---------- */
+@media (max-width: 480px) {
+    .nav-links a { font-size: 0.76rem; }
+    .hero-title { font-size: 1.55rem; }
+    .hero-desc { font-size: 0.86rem; }
+    .hero-tag { font-size: 0.68rem; }
+    .category-title-header { font-size: 1rem; }
+
+    .book-card { min-width: 125px; width: 125px; }
+    .book-card-img-container { width: 125px; height: 165px; }
+    .catalog-grid {
+        grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+        gap: 10px;
+    }
+
+    .admin-stats { grid-template-columns: repeat(2, 1fr); }
+    .avatar-grid { grid-template-columns: repeat(2, 1fr); }
+    .avatar-option img { max-width: 85px; }
+
+    .modal-title { font-size: 1.25rem; }
+    .modal-body { padding: 16px; }
+
+    .profiles-title { font-size: 1.45rem; }
+    .profile-card { width: 100px; }
+    .profile-avatar { width: 92px; height: 92px; }
+    .add-profile-btn { width: 92px; height: 92px; }
+
+    .login-box { padding: 22px 18px; }
+    .login-box h2 { font-size: 1.25rem; }
+    .login-header .brand-logo { font-size: 1.6rem; }
+
+    #screen-admin > h1 { font-size: 1.4rem; }
+    .page-view h1 { font-size: 1.45rem !important; }
+    .my-library-banner h1 { font-size: 1.2rem !important; }
+    .my-library-banner i { font-size: 2rem; }
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
