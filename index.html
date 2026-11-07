@@ -1102,6 +1102,47 @@
     .my-library-banner h1 { font-size: 1.2rem !important; }
     .my-library-banner i { font-size: 2rem; }
 }
+    
+    /* ===================================================================
+   CORRECCIÓN MÓVIL - Mostrar todos los enlaces del menú
+   =================================================================== */
+@media (max-width: 900px) {
+    /* 1. Hacemos que el menú se divida en varias líneas */
+    .nav-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;      /* Permite que los enlaces bajen a la siguiente línea */
+        overflow-x: visible;  /* Quitamos el scroll horizontal */
+        row-gap: 10px;        /* Espacio entre las filas de enlaces */
+        gap: 12px;
+        width: 100%;
+    }
+    
+    .nav-links a {
+        font-size: 0.85rem;
+        background: #222;     /* Un fondo sutil para que se vean como botones */
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    /* 2. Aumentamos el espacio de arriba para que el menú (ahora más alto) 
+          no tape el botón de "Volver al Inicio" ni el contenido */
+    .hero {
+        padding-top: 200px; 
+    }
+    
+    .page-view {
+        padding-top: 200px;
+    }
+    
+    #screen-admin {
+        padding-top: 200px;
+    }
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
